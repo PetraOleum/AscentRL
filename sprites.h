@@ -17,6 +17,13 @@ enum class Background : uint8_t {
 	TOTAL
 };
 
+enum class Foreground : uint8_t {
+	NONE = 0,
+	Witch,
+	Gold,
+	TOTAL
+};
+
 
 
 #endif

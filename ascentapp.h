@@ -116,11 +116,19 @@ class AscentApp {
 
 		SDL_Texture* backgroundSpriteSheet = NULL;
 
+		SDL_Texture* foregroundSpriteSheet = NULL;
+
 		bool Init_Background();
+
+		bool Init_Foreground();
 
 		std::map<Background, SDL_Rect> backgroundSpriteRect;
 
+		std::map<Foreground, SDL_Rect> foregroundSpriteRect;
+
 		void renderBackground(Background background, int xsquare, int ysquare);
+
+		void renderForeground(Foreground foreground, int xsquare, int ysquare);
 
 	public:
 		/// @brief Constructor

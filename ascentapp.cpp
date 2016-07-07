@@ -46,6 +46,8 @@ bool AscentApp::OnInit() {
 	SDL_SetRenderDrawColor(renderer, 0x00, 0x00, 0x00, 0xFF);
 	if (Init_Background() == false)
 		return false;
+	if (Init_Foreground() == false)
+		return false;
 	running = true;
 	return true;
 }
@@ -62,6 +64,7 @@ void AscentApp::OnRender() {
 		for (int y = 0; y < numSquaresY; y++) {
 			renderBackground(engine->getBackground(Point(x - mouseSquareX, y - mouseSquareY)), x, y);
 		}
+	renderForeground(Foreground::Witch, mouseSquareX, mouseSquareY);
 	if (mouseInSquares) {
 		SDL_SetRenderDrawColor(renderer, 0x00, 0x00, 0xFF, 0xFF);
 		int qss = SQUARE_SIZE / 4;
@@ -178,4 +181,47 @@ void AscentApp::renderBackground(Background background, int xsquare, int ysquare
 		SQUARE_SIZE
 	};
 	SDL_RenderCopy(renderer, backgroundSpriteSheet, &orect, &drect);
+}
+
+bool AscentApp::Init_Foreground() {
+	SDL_Surface* fgload = NULL;
+	if ((fgload = SDL_LoadBMP("ForegroundSprites.bmp")) == NULL) {
+		fprintf(stderr, "Could not load foreground sprites. SDL error: %s\n", SDL_GetError());
+		return false;
+	}
+	SDL_SetColorKey(fgload, SDL_TRUE, SDL_MapRGB(fgload->format, 0xFF, 0, 0xFF));
+	if ((foregroundSpriteSheet = SDL_CreateTextureFromSurface(renderer, fgload)) == NULL) {
+		fprintf(stderr, "Could not convert foreground surface to texture. SDL error: %s\n", SDL_GetError());
+		return false;
+	}
+	SDL_FreeSurface(fgload);
+	int x = 0;
+	int y = 0;
+	for (uint8_t i = (uint8_t)Foreground::NONE; i < (uint8_t)Foreground::TOTAL; i++) {
+		foregroundSpriteRect[(Foreground)i] = {
+			x * SPRITE_SIZE,
+			y * SPRITE_SIZE,
+			SPRITE_SIZE,
+			SPRITE_SIZE
+		};
+		x++;
+		if (x == SPRITE_SHEET_WIDTH) {
+			x = 0;
+			y++;
+		}
+	}
+	return true;
+}
+
+void AscentApp::renderForeground(Foreground foreground, int xsquare, int ysquare) {
+	if (foreground == Foreground::NONE)
+		return;
+	SDL_Rect orect = foregroundSpriteRect[foreground];
+	SDL_Rect drect = {
+		xOfSquare(xsquare),
+		yOfSquare(ysquare),
+		SQUARE_SIZE,
+		SQUARE_SIZE
+	};
+	SDL_RenderCopy(renderer, foregroundSpriteSheet, &orect, &drect);
 }
