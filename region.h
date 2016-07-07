@@ -10,23 +10,53 @@ class Region;
 
 using Point = std::pair<int, int>;
 
-enum class CardinalDirection : uint8_t {
+enum class Direction : uint8_t {
 	Up,
 	Right,
 	Left,
-	Down
+	Down,
+	UpRight,
+	DownRight,
+	DownLeft,
+	UpLeft
 };
+
+inline Direction oppositeDirection(Direction direction) {
+	switch (direction) {
+		case Direction::Up:
+			return Direction::Down;
+		case Direction::Right:
+			return Direction::Left;
+		case Direction::Left:
+			return Direction::Right;
+		case Direction::Down:
+			return Direction::Up;
+		case Direction::UpRight:
+			return Direction::DownLeft;
+		case Direction::DownRight:
+			return Direction::UpLeft;
+		case Direction::DownLeft:
+			return Direction::UpRight;
+		case Direction::UpLeft:
+			return Direction::DownRight;
+		default:
+			return Direction::Up;
+	}
+}
 
 struct Connection {
 	Point from;
 	Region* to;
 	Point toLocation;
-	CardinalDirection direction;
+	Direction direction;
 };
 
 class Region {
 	private:
+
 		std::map<Point, Background> points;
+
+		std::map<Point, Foreground> foreground;
 
 		std::vector<Connection> connections;
 
@@ -35,6 +65,8 @@ class Region {
 		int width;
 		
 		int height;
+
+		bool addrandomemptyconnection(Direction direction);
 		
 	public:
 		Region(int w, int h, int numconnections);
@@ -50,6 +82,20 @@ class Region {
 			else 
 				return it->second;
 		}
+
+		inline Foreground getForeground(Point location) {
+			auto it = foreground.find(location);
+			if (it == foreground.end())
+				return Foreground::NONE;
+			else
+				return it->second;
+		}
+
+		inline void setForeground(Point location, Foreground fore) {
+			foreground[location] = fore;
+		}
+
+		bool connectTo(Region* to, Direction direction, Point dpoint);
 
 };
 

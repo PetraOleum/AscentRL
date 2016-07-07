@@ -22,6 +22,10 @@ class Engine {
 
 		Region* activeRegion = NULL;
 
+		Point currentPosition = Point(0, 0);
+
+		Foreground underForeground = Foreground::NONE;
+
 	public:
 		Engine();
 		
@@ -30,7 +34,13 @@ class Engine {
 
 		Background getBackground(Point point);
 
+		Foreground getForeground(Point point);
 
+		bool Move(Direction direction);
+
+		inline Point getCurrentPosition() {
+			return currentPosition;
+		}
 
 };
 

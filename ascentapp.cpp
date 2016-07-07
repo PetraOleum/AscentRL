@@ -62,9 +62,10 @@ void AscentApp::OnRender() {
 	SDL_RenderClear(renderer);
 	for (int x = 0; x < numSquaresX; x++)
 		for (int y = 0; y < numSquaresY; y++) {
-			renderBackground(engine->getBackground(Point(x - mouseSquareX, y - mouseSquareY)), x, y);
+			Point corP = Point(x - numSquaresX / 2 + engine->getCurrentPosition().first, y - numSquaresY / 2 + engine->getCurrentPosition().second);
+			renderBackground(engine->getBackground(corP), x, y);
+			renderForeground(engine->getForeground(corP), x, y);
 		}
-	renderForeground(Foreground::Witch, mouseSquareX, mouseSquareY);
 	if (mouseInSquares) {
 		SDL_SetRenderDrawColor(renderer, 0x00, 0x00, 0xFF, 0xFF);
 		int qss = SQUARE_SIZE / 4;
@@ -138,6 +139,34 @@ void AscentApp::onKeyDown(SDL_KeyboardEvent * keyEvent) {
 				fullscreen = false;
 			}
 			break;
+		case SDLK_LEFT:
+		case SDLK_h:
+			engine->Move(Direction::Left);
+			break;
+		case SDLK_RIGHT:
+		case SDLK_l:
+			engine->Move(Direction::Right);
+			break;
+		case SDLK_UP:
+		case SDLK_k:
+			engine->Move(Direction::Up);
+			break;
+		case SDLK_DOWN:
+		case SDLK_j:
+			engine->Move(Direction::Down);
+			break;
+		case SDLK_y:
+			engine->Move(Direction::UpLeft);
+			break;
+		case SDLK_u:
+			engine->Move(Direction::UpRight);
+			break;
+		case SDLK_b:
+			engine->Move(Direction::DownLeft);
+			break;
+		case SDLK_n:
+			engine->Move(Direction::DownRight);
+			break;
 		default:
 			break;
 	}
@@ -173,6 +202,8 @@ bool AscentApp::Init_Background() {
 }
 
 void AscentApp::renderBackground(Background background, int xsquare, int ysquare) {
+	if (background == Background::EMPTYNESS)
+		return;
 	SDL_Rect orect = backgroundSpriteRect[background];
 	SDL_Rect drect = {
 		xOfSquare(xsquare), 
