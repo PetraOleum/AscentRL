@@ -6,6 +6,7 @@
 #include <map>
 
 #include "sprites.h"
+#include "engine.h"
 
 #define LOOP_TIME (1000/30)
 
@@ -16,6 +17,8 @@
 
 class AscentApp {
 	private:
+		Engine* engine = NULL;
+
 		/// @brief Is the app running
 		bool running = false;
 

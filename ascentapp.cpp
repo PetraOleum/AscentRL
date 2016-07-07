@@ -23,7 +23,7 @@ int AscentApp::OnExecute() {
 }
 
 bool AscentApp::OnInit() {
-
+	engine = new Engine;
 	if (SDL_Init(SDL_INIT_VIDEO) < 0) {
 		fprintf(stderr, "Could not initialise SDL. SDL error: %s\n", SDL_GetError());
 		return false;
@@ -60,10 +60,7 @@ void AscentApp::OnRender() {
 	SDL_RenderClear(renderer);
 	for (int x = 0; x < numSquaresX; x++)
 		for (int y = 0; y < numSquaresY; y++) {
-			if (x % 3 == 0)
-				renderBackground(Background::DirtWall, x, y);
-			else
-				renderBackground(Background::DirtFloor, x, y);
+			renderBackground(engine->getBackground(Point(x - mouseSquareX, y - mouseSquareY)), x, y);
 		}
 	if (mouseInSquares) {
 		SDL_SetRenderDrawColor(renderer, 0x00, 0x00, 0xFF, 0xFF);
@@ -106,6 +103,7 @@ void AscentApp::OnEvent(SDL_Event* event) {
 }
 
 void AscentApp::OnCleanup() {
+	delete engine;
 	SDL_DestroyTexture(backgroundSpriteSheet);
 	SDL_DestroyWindow(window);
 	SDL_DestroyRenderer(renderer);
@@ -155,7 +153,7 @@ bool AscentApp::Init_Background() {
 	SDL_FreeSurface(bssload);
 	int x = 0;
 	int y = 0;
-	for (uint8_t i = (uint8_t)Background::TiledFloor; i < (uint8_t)Background::TOTAL; i++) {
+	for (uint8_t i = (uint8_t)Background::EMPTYNESS; i < (uint8_t)Background::TOTAL; i++) {
 		backgroundSpriteRect[(Background)i] = {
 			x * SPRITE_SIZE, 
 			y * SPRITE_SIZE, 

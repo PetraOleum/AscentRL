@@ -7,7 +7,8 @@
 
 /// @brief Background sprites, in the order they appear on the sheet
 enum class Background : uint8_t {
-	TiledFloor = 0,
+	EMPTYNESS = 0,
+	TiledFloor,
 	DirtWall,
 	GemWall,
 	DirtFloor,
