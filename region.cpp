@@ -25,6 +25,7 @@ Region::Region(int w, int h, RoomType type) {
 				points[Point(-1, y)] = Background::StoneWall;
 				points[Point(w, y)] = Background::StoneWall;
 			}
+			points[Point(5, 3)] = Background::DirtWall;
 			numConnections = 0;
 			for (uint8_t i = 0; i < 4; i++) {
 				if (addrandomemptyconnection((Direction)i))

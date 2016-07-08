@@ -10,7 +10,7 @@
 #define MIN_ROOM_DIMENSION 1
 #define MAX_ROOM_DIMENSION 10
 
-#define FOV_RADIUS 7
+#define FOV_RADIUS 9
 
 using Point = std::pair<int, int>;
 using BaF = std::pair<Background, Foreground>;
