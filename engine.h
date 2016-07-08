@@ -10,7 +10,16 @@
 #define MIN_ROOM_DIMENSION 1
 #define MAX_ROOM_DIMENSION 10
 
+#define FOV_RADIUS 7
+
 using Point = std::pair<int, int>;
+using BaF = std::pair<Background, Foreground>;
+
+struct Visibility {
+	bool visible;
+	Background background;
+	Foreground foreground;
+};
 
 class Engine {
 	private:
@@ -25,6 +34,12 @@ class Engine {
 		Point currentPosition = Point(0, 0);
 
 		Foreground underForeground = Foreground::NONE;
+
+		std::map<Point, Visibility>* visiblelocations = NULL;
+
+		BaF relBaF(Point point);
+
+		void refreshFOV();
 
 	public:
 		Engine();

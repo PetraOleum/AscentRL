@@ -62,7 +62,7 @@ void AscentApp::OnRender() {
 	SDL_RenderClear(renderer);
 	for (int x = 0; x < numSquaresX; x++)
 		for (int y = 0; y < numSquaresY; y++) {
-			Point corP = Point(x - numSquaresX / 2 + engine->getCurrentPosition().first, y - numSquaresY / 2 + engine->getCurrentPosition().second);
+			Point corP = Point(x - numSquaresX / 2, y - numSquaresY / 2);
 			renderBackground(engine->getBackground(corP), x, y);
 			renderForeground(engine->getForeground(corP), x, y);
 		}

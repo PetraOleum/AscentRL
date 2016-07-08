@@ -4,6 +4,8 @@
 #include <cstdint>
 #include <map>
 
+#define ABS(A) ((A < 0) ? (-(A)) : (A))
+
 
 /// @brief Background sprites, in the order they appear on the sheet
 enum class Background : uint8_t {
@@ -26,14 +28,19 @@ enum class Foreground : uint8_t {
 	TOTAL
 };
 
+struct BackgroundProperties {
+	bool passible;
+	bool transparent;
+};
+
 /// @brief get the passiblity
-const std::map<Background, bool> passiblity = {
-	{Background::EMPTYNESS, false},
-	{Background::TiledFloor, true},
-	{Background::DirtWall, false},
-	{Background::StoneWall, false},
-	{Background::Door, true},
-	{Background::TOTAL, false}
+const std::map<Background, BackgroundProperties> bkgrProps = {
+	{Background::EMPTYNESS, {false, false}},
+	{Background::TiledFloor, {true, true}},
+	{Background::DirtWall, {false, false}},
+	{Background::StoneWall, {false, false}},
+	{Background::Door, {true, false}},
+	{Background::TOTAL, {false, false}}
 };
 
 #endif

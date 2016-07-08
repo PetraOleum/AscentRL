@@ -5,32 +5,54 @@ std::mt19937 gen;
 bool initgen = false;
 std::uniform_int_distribution<int> idist;
 
-Region::Region(int w, int h, int numconnections) {
+Region::Region(int w, int h, RoomType type) {
 	if (!initgen) {
 		std::random_device rd;
 		gen = std::mt19937(rd());
 	}
 	width = w;
 	height = h;
-	numConnections = numconnections;
-	for (int x = 0; x < w; x++) {
-		for (int y = 0; y < h; y++) {
-			points[Point(x, y)] = Background::TiledFloor;
-		}
-		points[Point(x, -1)] = Background::StoneWall;
-		points[Point(x, h)] = Background::StoneWall;
-	}
-	for (int y = -1; y <=h; y++) {
-		points[Point(-1, y)] = Background::StoneWall;
-		points[Point(w, y)] = Background::StoneWall;
-	}
-	numConnections = 4;
-	for (uint8_t i = 0; i < 4; i++) {
-		if (i < numconnections)
-			addrandomemptyconnection((Direction)i);
-		else {
-			numConnections = numconnections;
-		}
+	switch (type) {
+		case RoomType::Room:
+			for (int x = 0; x < w; x++) {
+				for (int y = 0; y < h; y++) {
+					points[Point(x, y)] = Background::TiledFloor;
+				}
+				points[Point(x, -1)] = Background::StoneWall;
+				points[Point(x, h)] = Background::StoneWall;
+			}
+			for (int y = -1; y <=h; y++) {
+				points[Point(-1, y)] = Background::StoneWall;
+				points[Point(w, y)] = Background::StoneWall;
+			}
+			numConnections = 0;
+			for (uint8_t i = 0; i < 4; i++) {
+				if (addrandomemptyconnection((Direction)i))
+					numConnections++;
+			}
+			break;
+		case RoomType::Corridor:
+			for (int x = -1; x <= w; x++)
+				for (int y = -1; y <= h; y++)
+					points[Point(x, y)] = Background::StoneWall;
+			if (w > h) {
+				std::uniform_int_distribution<int> ydist(0, h - 1);
+				int y = ydist(gen);
+				for (int x = 0; x < w; x++)
+					points[Point(x, y)] = Background::TiledFloor;
+				points[Point(-1, y)] = Background::Door;
+				points[Point(w, y)] = Background::Door;
+			} else {
+				std::uniform_int_distribution<int> xdist(0, w - 1);
+				int x = xdist(gen);
+				for (int y = 0; y < h; y++)
+					points[Point(x, y)] = Background::TiledFloor;
+				points[Point(x, -1)] = Background::Door;
+				points[Point(x, h)] = Background::Door;
+			}
+			break;
+		default:
+			break;
 	}
 	
 }

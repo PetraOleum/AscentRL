@@ -51,6 +51,11 @@ struct Connection {
 	Direction direction;
 };
 
+enum class RoomType : uint8_t {
+	Room,
+	Corridor
+};
+
 class Region {
 	private:
 
@@ -69,7 +74,7 @@ class Region {
 		bool addrandomemptyconnection(Direction direction);
 		
 	public:
-		Region(int w, int h, int numconnections);
+		Region(int w, int h, RoomType type);
 
 		~Region() {
 
