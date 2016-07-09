@@ -1,8 +1,11 @@
 #include "region.h"
 #include <random>
 
+/// @brief A static random number generator, for the region
 std::mt19937 gen;
+/// @brief Whether or not the generator has been initialised
 bool initgen = false;
+/// @brief A int distribution
 std::uniform_int_distribution<int> idist;
 
 Region::Region(int w, int h, RoomType type) {

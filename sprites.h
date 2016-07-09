@@ -4,6 +4,11 @@
 #include <cstdint>
 #include <map>
 
+/// @brief Absolute value
+///
+/// @param A The value to take the abs of 
+///
+/// @return The abs of the value
 #define ABS(A) ((A < 0) ? (-(A)) : (A))
 
 
@@ -28,12 +33,13 @@ enum class Foreground : uint8_t {
 	TOTAL
 };
 
+/// @brief Properties of a background
 struct BackgroundProperties {
 	bool passible;
 	bool transparent;
 };
 
-/// @brief get the passiblity
+/// @brief Holds the properties of a background
 const std::map<Background, BackgroundProperties> bkgrProps = {
 	{Background::EMPTYNESS, {false, false}},
 	{Background::TiledFloor, {true, true}},

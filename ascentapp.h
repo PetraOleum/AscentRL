@@ -17,6 +17,7 @@
 
 class AscentApp {
 	private:
+		/// @brief Pointer to the engine
 		Engine* engine = NULL;
 
 		/// @brief Is the app running
@@ -110,24 +111,46 @@ class AscentApp {
 
 		/* Sprite stuff */
 
+		/// @brief Size of the sprites on the sheet in pixels
 		const int SPRITE_SIZE = 32;
 
+		/// @brief Number of sprites in a row on a sheet
 		const int SPRITE_SHEET_WIDTH = 8;
 
+		/// @brief Holds the background sprite sheet
 		SDL_Texture* backgroundSpriteSheet = NULL;
 
+		/// @brief The foreground sprite sheet
 		SDL_Texture* foregroundSpriteSheet = NULL;
 
+		/// @brief Initialise the background sprites
+		///
+		/// @return Success/fail
 		bool Init_Background();
 
+		/// @brief Initialise the foreground sprites
+		///
+		/// @return Success/fail
 		bool Init_Foreground();
 
+		/// @brief Map backgrounds to the SDL_Rect area of the sheet
 		std::map<Background, SDL_Rect> backgroundSpriteRect;
 
+		/// @brief Map foregrouds to the sprite sheet
 		std::map<Foreground, SDL_Rect> foregroundSpriteRect;
 
+		/// @brief Render a background of a square
+		///
+		/// @param background The value of the background
+		/// @param xsquare Square x coord
+		/// @param ysquare Square y coord
 		void renderBackground(Background background, int xsquare, int ysquare);
 
+		/// @brief Render a foreground of a square
+		///
+		/// @param foreground The value of the foreground
+		/// @param xsquare Square x coord
+		/// @param ysquare Square y coord
 		void renderForeground(Foreground foreground, int xsquare, int ysquare);
 
 	public:
