@@ -83,17 +83,23 @@ BaF Engine::relBaF(Point point, const Point & relto) {
 		activeRegion->getBackground(relpt),
 		activeRegion->getForeground(relpt)
 	};
-	if (altRegionLoaded && activeBaF.first == Background::EMPTYNESS) {
-//	if (altRegionLoaded) {
-		Point altrelpt = PAIR_SUM(relpt, altDisplacement);
-		
-		BaF altBaF = {
-			alternateRegion->getBackground(altrelpt),
-			alternateRegion->getForeground(altrelpt)
-		};
-//		printf("{%d, %d}, {%d. %d}: %d; {%d, %d}: %d; {%d, %d}\n", point.first, point.second, relpt.first, relpt.second, (int)activeBaF.first, altrelpt.first, altrelpt.second, (int)altBaF.first, altDisplacement.first, altDisplacement.second);
-		if (altBaF.first != Background::EMPTYNESS) {
-			return altBaF;
+//	if (altRegionLoaded && activeBaF.first == Background::EMPTYNESS) {
+	if (altRegionLoaded) {
+		Direction cdir = activeRegion->connectionAt(currentPosition).direction;
+		Point tpd = DISPLACEMENT(cdir);
+		Point reldiff = PAIR_SUBTRACT(relpt, currentPosition);
+		Point muldirr = PAIR_MULTIPLY(tpd, reldiff);
+		if (muldirr.first > 0 || muldirr.second > 0) {
+			Point altrelpt = PAIR_SUM(relpt, altDisplacement);
+			
+			BaF altBaF = {
+				alternateRegion->getBackground(altrelpt),
+				alternateRegion->getForeground(altrelpt)
+			};
+	//		printf("{%d, %d}, {%d. %d}: %d; {%d, %d}: %d; {%d, %d}\n", point.first, point.second, relpt.first, relpt.second, (int)activeBaF.first, altrelpt.first, altrelpt.second, (int)altBaF.first, altDisplacement.first, altDisplacement.second);
+			if (altBaF.first != Background::EMPTYNESS) {
+				return altBaF;
+			}
 		}
 	}
 	return activeBaF;

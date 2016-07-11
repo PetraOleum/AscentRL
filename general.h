@@ -112,4 +112,6 @@ const std::map<Direction, Point> displacementMap = {
 
 #define PAIR_SUBTRACT(A, B) (std::make_pair(A.first - B.first, A.second - B.second))
 
+#define PAIR_MULTIPLY(A, B) (std::make_pair(A.first * B.first, A.second * B.second))
+
 #endif
