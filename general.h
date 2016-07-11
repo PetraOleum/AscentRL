@@ -24,6 +24,7 @@ enum class Background : uint8_t {
 	DirtFloor,
 	StoneWall,
 	Door,
+	MarkedDoor,
 	/// @brief The total number of background sprites
 	TOTAL
 };
@@ -49,6 +50,7 @@ const std::map<Background, BackgroundProperties> bkgrProps = {
 	{Background::DirtWall, {false, false}},
 	{Background::StoneWall, {false, false}},
 	{Background::Door, {true, false}},
+	{Background::MarkedDoor, {true, false}},
 	{Background::TOTAL, {false, false}}
 };
 

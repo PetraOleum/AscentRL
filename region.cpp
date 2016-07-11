@@ -84,7 +84,7 @@ bool Region::addrandomemptyconnection(Direction direction) {
 			return false;
 	};
 
-	if (points[p] == Background::Door)
+	if (points[p] == Background::Door || points[p] == Background::MarkedDoor)
 		return false;
 
 	points[p] = Background::Door;

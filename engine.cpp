@@ -113,7 +113,8 @@ void Engine::refreshFOV() {
 }
 
 void Engine::manageAltRegion() {
-	if (activeRegion->getBackground(currentPosition) == Background::Door) {
+	Background cpb = activeRegion->getBackground(currentPosition);
+	if (cpb == Background::Door || cpb == Background::MarkedDoor) {
 		Connection tc = activeRegion->connectionAt(currentPosition);
 //		printf("manageAltRegion(), 0x%lx\n", (long int)tc.to);
 		if (tc.to != NULL) {
