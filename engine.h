@@ -46,15 +46,29 @@ class Engine {
 		/// @brief The current position of the player in the active region
 		Point currentPosition = Point(0, 0);
 
+		/// @brief The alternate region (if sitting on a door)
+		Region* alternateRegion = NULL;
+
+		/// @brief The displacement of the alternate region from the current region
+		Point altDisplacement = Point(0,0);
+
+		/// @brief True if an alternate region is loaded (set by manageAltRegion())
+		bool altRegionLoaded = false;
+
+		/// @brief Manage the alternate region
+		void manageAltRegion();
+
+		void swapRegions();
+
 		/// @brief Temp variable for the foreground of the square you're in
 		Foreground underForeground = Foreground::NONE;
 
 		/// @brief Map of visible squares, accessed indirectly by the app
 		std::map<Point, Visibility>* visiblelocations = NULL;
 
-		/// @brief Converter between point (relative to current position) and actual location
+		/// @brief Converter between point and actual location
 		///
-		/// @param point Point (relative to currentPosition)
+		/// @param point Point
 		/// @param relto Point relative to what
 		///
 		/// @return Pair of foreground/background

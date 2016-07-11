@@ -37,7 +37,7 @@ class Region {
 		std::map<Point, Foreground> foreground;
 
 		/// @brief Connections
-		std::vector<Connection> connections;
+		std::map<Point, Connection> connections;
 
 		/// @brief The number of potential connections (i.e. doors)
 		int numConnections;
@@ -109,8 +109,34 @@ class Region {
 		/// @param dpoint Destination point connecting to
 		///
 		/// @return Success/fail
-		bool connectTo(Region* to, Direction direction, Point dpoint);
+		bool connectTo(Region* to, Direction direction, Point opoint, Point dpoint);
+
+		/// @brief Get the connection at a point (i.e. translate door coords to the connection)
+		///
+		/// @param point The coords
+		///
+		/// @return Copy of the connection
+		inline Connection connectionAt(Point point) {
+			auto it = connections.find(point);
+			if (it == connections.end()) 
+				return {
+					{0,0}, 
+					NULL, 
+					{0,0}, 
+					Direction::Up
+				};
+			else
+				return it->second;
+		}
+
+		/// @brief Get the location of a free connection
+		///
+		/// @param dir The direction it's going
+		///
+		/// @return Pair of the point, and true/false is free
+		std::pair<Point, bool> freeConnection(Direction dir);
 
 };
+
 
 #endif

@@ -95,18 +95,48 @@ bool Region::addrandomemptyconnection(Direction direction) {
 		Point(0, 0),
 		direction
 	};
-	connections.push_back(nConnection);
-
+//	connections.push_back(nConnection);
+	connections[p] = nConnection;
 	return true;
 }
 
-bool Region::connectTo(Region* to, Direction direction, Point dpoint) {
-	for (unsigned int i = 0; i < connections.size(); i++) {
-		if (connections[i].direction == direction && connections[i].to == NULL) {
-			connections[i].to = to;
-			connections[i].toLocation = dpoint;
-			return true;
-		}
-	}
-	return false;
+bool Region::connectTo(Region* to, Direction direction, Point opoint, Point dpoint) {
+//	for (unsigned int i = 0; i < connections.size(); i++) {
+//		if (connections[i].direction == direction && connections[i].to == NULL) {
+//			connections[i].to = to;
+//			connections[i].toLocation = dpoint;
+//			return true;
+//		}
+//	}
+//	for (auto & it : connections) 
+//		if (it.second.direction == direction && it.second.to == NULL) {
+//			it.second.to = to;
+//			it.second.toLocation = dpoint;
+//			return true;
+//		}
+	auto it = connections.find(opoint);
+	if (it == connections.end())
+		return false;
+	if (it->second.direction != direction)
+		return false;
+	if (it->second.to != NULL)
+		return false;
+	if (it->second.from != opoint)
+		return false;
+	it->second.to = to;
+	it->second.toLocation = dpoint;
+	return true;
+}
+
+std::pair<Point, bool> Region::freeConnection(Direction dir) {
+	for (auto & it : connections)
+		if (it.second.direction == dir && it.second.to == NULL)
+			return {
+				it.second.from,
+				true
+			};
+	return {
+		{0,0},
+		false
+	};
 }
