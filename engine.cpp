@@ -83,16 +83,20 @@ BaF Engine::relBaF(Point point, const Point & relto) {
 		activeRegion->getBackground(relpt),
 		activeRegion->getForeground(relpt)
 	};
-	if (altRegionLoaded && activeBaF.first == Background::EMPTYNESS) {
+//	if (altRegionLoaded && activeBaF.first == Background::EMPTYNESS) {
+	if (altRegionLoaded) {
 		Point altrelpt = PAIR_SUM(relto, altDisplacement);
 		
 		BaF altBaF = {
 			alternateRegion->getBackground(altrelpt),
 			alternateRegion->getForeground(altrelpt)
 		};
-		return altBaF;
-	} else
-		return activeBaF;
+		printf("{%d. %d}: %d; {%d, %d}: %d; {%d, %d}\n", relpt.first, relpt.second, (int)activeBaF.first, altrelpt.first, altrelpt.second, (int)altBaF.first, altDisplacement.first, altDisplacement.second);
+		if (altBaF.first != Background::EMPTYNESS) {
+			return altBaF;
+		}
+	}
+	return activeBaF;
 }
 
 void Engine::refreshFOV() {
