@@ -16,521 +16,164 @@ std::map<Point, Visibility>* Engine::FOV(Point point) {
 
 	using AnglePair = std::pair<double, double>;
 
-	std::vector<AnglePair> * currentBlocked = new std::vector<AnglePair>;
-	std::vector<AnglePair> * nextLineBlocked = new std::vector<AnglePair>;
+	auto fovlambda = [visMap, point, this](int xTransform, int yTransform) {
+		std::vector<AnglePair> * currentBlocked = new std::vector<AnglePair>;
+		std::vector<AnglePair> * nextLineBlocked = new std::vector<AnglePair>;
 
-	// SSW octant actually x negative, y positive
-	for (int y = 1; y < FOV_RADIUS; y++) {
-		// Copy next line into current line, and refresh next line
-		for (auto ap : *nextLineBlocked)
-			currentBlocked->push_back(ap);
-		delete nextLineBlocked;
-		nextLineBlocked = new std::vector<AnglePair>;
+		for (int y = 1; y < FOV_RADIUS; y++) {
+			// Copy next line into current line, and refresh next line
+			for (auto ap : *nextLineBlocked)
+				currentBlocked->push_back(ap);
+			delete nextLineBlocked;
+			nextLineBlocked = new std::vector<AnglePair>;
 
-		double arange = 1.0 / (double)(y + 1);
-		for (int x = 0; x <= y; x++) {
-			// Because x is negative, this needs to be the negative
-			int cellno = -x;
-			Point tp(cellno, y);
-			double startingAngle = x * arange;
-			double endingAngle = startingAngle + arange;
-			double centreAngle = startingAngle + arange / 2;
-			BaF thisCell = relBaF(tp, point);
-			bool tct = bkgrProps.at(thisCell.first).transparent;
-			bool centreAngleBlocked = false;
-			bool endingAngleBlocked = false;
-			bool startingAngleBlocked = false;
-			bool tcs = true;
-			for (auto ap : *currentBlocked) {
-				if (startingAngle >= ap.first && startingAngle < ap.second)
-					startingAngleBlocked = true;
-				if (endingAngle > ap.first && endingAngle <= ap.second)
-					endingAngleBlocked = true;
-				if (centreAngle > ap.first && centreAngle < ap.second)
-					centreAngleBlocked = true;
-				if (tct) {
-					if (centreAngleBlocked || (startingAngleBlocked && endingAngleBlocked)) {
-						tcs = false;
-						break;
-					}
-				} else {
-					if (centreAngleBlocked && startingAngleBlocked && endingAngleBlocked) {
-						tcs = false;
-						break;
+			double arange = 1.0 / (double)(y + 1);
+			for (int x = 0; x <= y; x++) {
+				Point tp(x * xTransform, y * yTransform);
+				double startingAngle = x * arange;
+				double endingAngle = startingAngle + arange;
+				double centreAngle = startingAngle + arange / 2;
+				BaF thisCell = relBaF(tp, point);
+				bool tct = bkgrProps.at(thisCell.first).transparent;
+				bool centreAngleBlocked = false;
+				bool endingAngleBlocked = false;
+				bool startingAngleBlocked = false;
+				bool tcs = true;
+				for (auto ap : *currentBlocked) {
+					if (startingAngle >= ap.first && startingAngle < ap.second)
+						startingAngleBlocked = true;
+					if (endingAngle > ap.first && endingAngle <= ap.second)
+						endingAngleBlocked = true;
+					if (centreAngle > ap.first && centreAngle < ap.second)
+						centreAngleBlocked = true;
+					if (tct) {
+						if (centreAngleBlocked || (startingAngleBlocked && endingAngleBlocked)) {
+							tcs = false;
+							break;
+						}
+					} else {
+						if (centreAngleBlocked && startingAngleBlocked && endingAngleBlocked) {
+							tcs = false;
+							break;
+						}
 					}
 				}
+
+				if (tcs) {
+					Visibility thisvs = {
+						true,
+						thisCell.first,
+						thisCell.second
+					};
+					(*visMap)[tp] = thisvs;
+					if (!tct)
+						nextLineBlocked->push_back(
+								AnglePair(
+									startingAngle, 
+									endingAngle));
+					
+				}
+
+
 			}
-
-			if (tcs) {
-				Visibility thisvs = {
-					true,
-					thisCell.first,
-					thisCell.second
-				};
-				(*visMap)[tp] = thisvs;
-				if (!tct)
-					nextLineBlocked->push_back(
-							AnglePair(
-								startingAngle, 
-								endingAngle));
-				
-			}
-
-
 		}
-	}
 
-	delete nextLineBlocked;
-	delete currentBlocked;
+		delete nextLineBlocked;
+		delete currentBlocked;
+	};
+	
+	auto fovlambda2 = [visMap, point, this](int xTransform, int yTransform) {
+		std::vector<AnglePair> * currentBlocked = new std::vector<AnglePair>;
+		std::vector<AnglePair> * nextLineBlocked = new std::vector<AnglePair>;
+
+		for (int x = 1; x < FOV_RADIUS; x++) {
+			// Copy next line into current line, and refresh next line
+			for (auto ap : *nextLineBlocked)
+				currentBlocked->push_back(ap);
+			delete nextLineBlocked;
+			nextLineBlocked = new std::vector<AnglePair>;
+
+			double arange = 1.0 / (double)(x + 1);
+			for (int y = 0; y <= x; y++) {
+				Point tp(x * xTransform, y * yTransform);
+				double startingAngle = y * arange;
+				double endingAngle = startingAngle + arange;
+				double centreAngle = startingAngle + arange / 2;
+				BaF thisCell = relBaF(tp, point);
+				bool tct = bkgrProps.at(thisCell.first).transparent;
+				bool centreAngleBlocked = false;
+				bool endingAngleBlocked = false;
+				bool startingAngleBlocked = false;
+				bool tcs = true;
+				for (auto ap : *currentBlocked) {
+					if (startingAngle >= ap.first && startingAngle < ap.second)
+						startingAngleBlocked = true;
+					if (endingAngle > ap.first && endingAngle <= ap.second)
+						endingAngleBlocked = true;
+					if (centreAngle > ap.first && centreAngle < ap.second)
+						centreAngleBlocked = true;
+					if (tct) {
+						if (centreAngleBlocked || (startingAngleBlocked && endingAngleBlocked)) {
+							tcs = false;
+							break;
+						}
+					} else {
+						if (centreAngleBlocked && startingAngleBlocked && endingAngleBlocked) {
+							tcs = false;
+							break;
+						}
+					}
+				}
+
+				if (tcs) {
+					Visibility thisvs = {
+						true,
+						thisCell.first,
+						thisCell.second
+					};
+					(*visMap)[tp] = thisvs;
+					if (!tct)
+						nextLineBlocked->push_back(
+								AnglePair(
+									startingAngle, 
+									endingAngle));
+					
+				}
+
+
+			}
+		}
+
+		delete nextLineBlocked;
+		delete currentBlocked;
+	};
+
+
+
+
+	// SSW octant - x negative, y positive
+	fovlambda(-1, 1);
 
 	// SSE octant - x positive, y positive
-	nextLineBlocked = new std::vector<AnglePair>;
-	currentBlocked = new std::vector<AnglePair>;
+	fovlambda(1, 1);
 
-	for (int y = 1; y < FOV_RADIUS; y++) {
-
-		for (auto ap : *nextLineBlocked)
-			currentBlocked->push_back(ap);
-		delete nextLineBlocked;
-		nextLineBlocked = new std::vector<AnglePair>;
-
-
-		double arange = 1.0 / (double)(y + 1);
-		for (int x = 0; x <= y; x++) {
-			// Don't need -x this time!
-			Point tp(x, y);
-			double startingAngle = x * arange;
-			// Mostly the same from here on
-			double endingAngle = startingAngle + arange;
-			double centreAngle = startingAngle + arange / 2;
-			BaF thisCell = relBaF(tp, point);
-			bool tct = bkgrProps.at(thisCell.first).transparent;
-			bool centreAngleBlocked = false;
-			bool endingAngleBlocked = false;
-			bool startingAngleBlocked = false;
-			bool tcs = true;
-			for (auto ap : *currentBlocked) {
-				if (startingAngle >= ap.first && startingAngle < ap.second)
-					startingAngleBlocked = true;
-				if (endingAngle > ap.first && endingAngle <= ap.second)
-					endingAngleBlocked = true;
-				if (centreAngle > ap.first && centreAngle < ap.second)
-					centreAngleBlocked = true;
-				if (tct) {
-					if (centreAngleBlocked || (startingAngleBlocked && endingAngleBlocked)) {
-						tcs = false;
-						break;
-					}
-				} else {
-					if (centreAngleBlocked && startingAngleBlocked && endingAngleBlocked) {
-						tcs = false;
-						break;
-					}
-				}
-			}
-
-			if (tcs) {
-				Visibility thisvs = {
-					true,
-					thisCell.first,
-					thisCell.second
-				};
-				(*visMap)[tp] = thisvs;
-				if (!tct)
-					nextLineBlocked->push_back(
-							AnglePair(
-								startingAngle, 
-								endingAngle));
-				
-			}
-		}
-	}
-	delete nextLineBlocked;
-	delete currentBlocked;
-
-	//NNE octant - x positive, y negative
-	nextLineBlocked = new std::vector<AnglePair>;
-	currentBlocked = new std::vector<AnglePair>;
-
-	for (int y = 1; y < FOV_RADIUS; y++) {
-
-		for (auto ap : *nextLineBlocked)
-			currentBlocked->push_back(ap);
-		delete nextLineBlocked;
-		nextLineBlocked = new std::vector<AnglePair>;
-
-
-		double arange = 1.0 / (double)(y + 1);
-		for (int x = 0; x <= y; x++) {
-			Point tp(x, -y);
-			double startingAngle = x * arange;
-			// Mostly the same from here on
-			double endingAngle = startingAngle + arange;
-			double centreAngle = startingAngle + arange / 2;
-			BaF thisCell = relBaF(tp, point);
-			bool tct = bkgrProps.at(thisCell.first).transparent;
-			bool centreAngleBlocked = false;
-			bool endingAngleBlocked = false;
-			bool startingAngleBlocked = false;
-			bool tcs = true;
-			for (auto ap : *currentBlocked) {
-				if (startingAngle >= ap.first && startingAngle < ap.second)
-					startingAngleBlocked = true;
-				if (endingAngle > ap.first && endingAngle <= ap.second)
-					endingAngleBlocked = true;
-				if (centreAngle > ap.first && centreAngle < ap.second)
-					centreAngleBlocked = true;
-				if (tct) {
-					if (centreAngleBlocked || (startingAngleBlocked && endingAngleBlocked)) {
-						tcs = false;
-						break;
-					}
-				} else {
-					if (centreAngleBlocked && startingAngleBlocked && endingAngleBlocked) {
-						tcs = false;
-						break;
-					}
-				}
-			}
-
-			if (tcs) {
-				Visibility thisvs = {
-					true,
-					thisCell.first,
-					thisCell.second
-				};
-				(*visMap)[tp] = thisvs;
-				if (!tct)
-					nextLineBlocked->push_back(
-							AnglePair(
-								startingAngle, 
-								endingAngle));
-				
-			}
-		}
-	}
-	delete nextLineBlocked;
-	delete currentBlocked;
+	// NNE octant - x positive, y negative
+	fovlambda(1, -1);
 
 	// NNW octant - x negative, y negative
-	nextLineBlocked = new std::vector<AnglePair>;
-	currentBlocked = new std::vector<AnglePair>;
-
-	for (int y = 1; y < FOV_RADIUS; y++) {
-
-		for (auto ap : *nextLineBlocked)
-			currentBlocked->push_back(ap);
-		delete nextLineBlocked;
-		nextLineBlocked = new std::vector<AnglePair>;
-
-
-		double arange = 1.0 / (double)(y + 1);
-		for (int x = 0; x <= y; x++) {
-			Point tp(-x, -y);
-			double startingAngle = x * arange;
-			// Mostly the same from here on
-			double endingAngle = startingAngle + arange;
-			double centreAngle = startingAngle + arange / 2;
-			BaF thisCell = relBaF(tp, point);
-			bool tct = bkgrProps.at(thisCell.first).transparent;
-			bool centreAngleBlocked = false;
-			bool endingAngleBlocked = false;
-			bool startingAngleBlocked = false;
-			bool tcs = true;
-			for (auto ap : *currentBlocked) {
-				if (startingAngle >= ap.first && startingAngle < ap.second)
-					startingAngleBlocked = true;
-				if (endingAngle > ap.first && endingAngle <= ap.second)
-					endingAngleBlocked = true;
-				if (centreAngle > ap.first && centreAngle < ap.second)
-					centreAngleBlocked = true;
-				if (tct) {
-					if (centreAngleBlocked || (startingAngleBlocked && endingAngleBlocked)) {
-						tcs = false;
-						break;
-					}
-				} else {
-					if (centreAngleBlocked && startingAngleBlocked && endingAngleBlocked) {
-						tcs = false;
-						break;
-					}
-				}
-			}
-
-			if (tcs) {
-				Visibility thisvs = {
-					true,
-					thisCell.first,
-					thisCell.second
-				};
-				(*visMap)[tp] = thisvs;
-				if (!tct)
-					nextLineBlocked->push_back(
-							AnglePair(
-								startingAngle, 
-								endingAngle));
-				
-			}
-		}
-	}
-	delete nextLineBlocked;
-	delete currentBlocked;
+	fovlambda(-1, -1);
 	
-	//ESE octant - x positive, y positive
-	nextLineBlocked = new std::vector<AnglePair>;
-	currentBlocked = new std::vector<AnglePair>;
-
-	for (int x = 1; x < FOV_RADIUS; x++) {
-
-		for (auto ap : *nextLineBlocked)
-			currentBlocked->push_back(ap);
-		delete nextLineBlocked;
-		nextLineBlocked = new std::vector<AnglePair>;
-
-
-		double arange = 1.0 / (double)(x + 1);
-		for (int y = 0; y <= x; y++) {
-			Point tp(x, y);
-			double startingAngle = y * arange;
-			// Mostly the same from here on
-			double endingAngle = startingAngle + arange;
-			double centreAngle = startingAngle + arange / 2;
-			BaF thisCell = relBaF(tp, point);
-			bool tct = bkgrProps.at(thisCell.first).transparent;
-			bool centreAngleBlocked = false;
-			bool endingAngleBlocked = false;
-			bool startingAngleBlocked = false;
-			bool tcs = true;
-			for (auto ap : *currentBlocked) {
-				if (startingAngle >= ap.first && startingAngle < ap.second)
-					startingAngleBlocked = true;
-				if (endingAngle > ap.first && endingAngle <= ap.second)
-					endingAngleBlocked = true;
-				if (centreAngle > ap.first && centreAngle < ap.second)
-					centreAngleBlocked = true;
-				if (tct) {
-					if (centreAngleBlocked || (startingAngleBlocked && endingAngleBlocked)) {
-						tcs = false;
-						break;
-					}
-				} else {
-					if (centreAngleBlocked && startingAngleBlocked && endingAngleBlocked) {
-						tcs = false;
-						break;
-					}
-				}
-			}
-
-			if (tcs) {
-				Visibility thisvs = {
-					true,
-					thisCell.first,
-					thisCell.second
-				};
-				(*visMap)[tp] = thisvs;
-				if (!tct)
-					nextLineBlocked->push_back(
-							AnglePair(
-								startingAngle, 
-								endingAngle));
-				
-			}
-		}
-	}
-	delete nextLineBlocked;
-	delete currentBlocked;
+	// ESE octant - x positive, y positive
+	fovlambda2(1, 1);
 
 	// ENE octant - x positive, y negative
-	nextLineBlocked = new std::vector<AnglePair>;
-	currentBlocked = new std::vector<AnglePair>;
+	fovlambda2(1, -1);
 
-	for (int x = 1; x < FOV_RADIUS; x++) {
-
-		for (auto ap : *nextLineBlocked)
-			currentBlocked->push_back(ap);
-		delete nextLineBlocked;
-		nextLineBlocked = new std::vector<AnglePair>;
-
-
-		double arange = 1.0 / (double)(x + 1);
-		for (int y = 0; y <= x; y++) {
-			Point tp(x, -y);
-			double startingAngle = y * arange;
-			// Mostly the same from here on
-			double endingAngle = startingAngle + arange;
-			double centreAngle = startingAngle + arange / 2;
-			BaF thisCell = relBaF(tp, point);
-			bool tct = bkgrProps.at(thisCell.first).transparent;
-			bool centreAngleBlocked = false;
-			bool endingAngleBlocked = false;
-			bool startingAngleBlocked = false;
-			bool tcs = true;
-			for (auto ap : *currentBlocked) {
-				if (startingAngle >= ap.first && startingAngle < ap.second)
-					startingAngleBlocked = true;
-				if (endingAngle > ap.first && endingAngle <= ap.second)
-					endingAngleBlocked = true;
-				if (centreAngle > ap.first && centreAngle < ap.second)
-					centreAngleBlocked = true;
-				if (tct) {
-					if (centreAngleBlocked || (startingAngleBlocked && endingAngleBlocked)) {
-						tcs = false;
-						break;
-					}
-				} else {
-					if (centreAngleBlocked && startingAngleBlocked && endingAngleBlocked) {
-						tcs = false;
-						break;
-					}
-				}
-			}
-
-			if (tcs) {
-				Visibility thisvs = {
-					true,
-					thisCell.first,
-					thisCell.second
-				};
-				(*visMap)[tp] = thisvs;
-				if (!tct)
-					nextLineBlocked->push_back(
-							AnglePair(
-								startingAngle, 
-								endingAngle));
-				
-			}
-		}
-	}
-	delete nextLineBlocked;
-	delete currentBlocked;
-
-	//WSW octant - x negative, y positive
-	nextLineBlocked = new std::vector<AnglePair>;
-	currentBlocked = new std::vector<AnglePair>;
-
-	for (int x = 1; x < FOV_RADIUS; x++) {
-
-		for (auto ap : *nextLineBlocked)
-			currentBlocked->push_back(ap);
-		delete nextLineBlocked;
-		nextLineBlocked = new std::vector<AnglePair>;
-
-
-		double arange = 1.0 / (double)(x + 1);
-		for (int y = 0; y <= x; y++) {
-			Point tp(-x, y);
-			double startingAngle = y * arange;
-			// Mostly the same from here on
-			double endingAngle = startingAngle + arange;
-			double centreAngle = startingAngle + arange / 2;
-			BaF thisCell = relBaF(tp, point);
-			bool tct = bkgrProps.at(thisCell.first).transparent;
-			bool centreAngleBlocked = false;
-			bool endingAngleBlocked = false;
-			bool startingAngleBlocked = false;
-			bool tcs = true;
-			for (auto ap : *currentBlocked) {
-				if (startingAngle >= ap.first && startingAngle < ap.second)
-					startingAngleBlocked = true;
-				if (endingAngle > ap.first && endingAngle <= ap.second)
-					endingAngleBlocked = true;
-				if (centreAngle > ap.first && centreAngle < ap.second)
-					centreAngleBlocked = true;
-				if (tct) {
-					if (centreAngleBlocked || (startingAngleBlocked && endingAngleBlocked)) {
-						tcs = false;
-						break;
-					}
-				} else {
-					if (centreAngleBlocked && startingAngleBlocked && endingAngleBlocked) {
-						tcs = false;
-						break;
-					}
-				}
-			}
-
-			if (tcs) {
-				Visibility thisvs = {
-					true,
-					thisCell.first,
-					thisCell.second
-				};
-				(*visMap)[tp] = thisvs;
-				if (!tct)
-					nextLineBlocked->push_back(
-							AnglePair(
-								startingAngle, 
-								endingAngle));
-				
-			}
-		}
-	}
-	delete nextLineBlocked;
-	delete currentBlocked;
+	// WSW octant - x negative, y positive
+	fovlambda2(-1, 1);
 
 	// WNW octant - x negative, y negative
-	nextLineBlocked = new std::vector<AnglePair>;
-	currentBlocked = new std::vector<AnglePair>;
-
-	for (int x = 1; x < FOV_RADIUS; x++) {
-
-		for (auto ap : *nextLineBlocked)
-			currentBlocked->push_back(ap);
-		delete nextLineBlocked;
-		nextLineBlocked = new std::vector<AnglePair>;
-
-
-		double arange = 1.0 / (double)(x + 1);
-		for (int y = 0; y <= x; y++) {
-			Point tp(-x, -y);
-			double startingAngle = y * arange;
-			// Mostly the same from here on
-			double endingAngle = startingAngle + arange;
-			double centreAngle = startingAngle + arange / 2;
-			BaF thisCell = relBaF(tp, point);
-			bool tct = bkgrProps.at(thisCell.first).transparent;
-			bool centreAngleBlocked = false;
-			bool endingAngleBlocked = false;
-			bool startingAngleBlocked = false;
-			bool tcs = true;
-			for (auto ap : *currentBlocked) {
-				if (startingAngle >= ap.first && startingAngle < ap.second)
-					startingAngleBlocked = true;
-				if (endingAngle > ap.first && endingAngle <= ap.second)
-					endingAngleBlocked = true;
-				if (centreAngle > ap.first && centreAngle < ap.second)
-					centreAngleBlocked = true;
-				if (tct) {
-					if (centreAngleBlocked || (startingAngleBlocked && endingAngleBlocked)) {
-						tcs = false;
-						break;
-					}
-				} else {
-					if (centreAngleBlocked && startingAngleBlocked && endingAngleBlocked) {
-						tcs = false;
-						break;
-					}
-				}
-			}
-
-			if (tcs) {
-				Visibility thisvs = {
-					true,
-					thisCell.first,
-					thisCell.second
-				};
-				(*visMap)[tp] = thisvs;
-				if (!tct)
-					nextLineBlocked->push_back(
-							AnglePair(
-								startingAngle, 
-								endingAngle));
-				
-			}
-		}
-	}
-	delete nextLineBlocked;
-	delete currentBlocked;
+	fovlambda2(-1, -1);
 
 
 	return visMap;
