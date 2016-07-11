@@ -5,7 +5,7 @@
 #include <cstdint>
 #include <map>
 
-#include "sprites.h"
+#include "general.h"
 #include "engine.h"
 
 #define LOOP_TIME (1000/30)

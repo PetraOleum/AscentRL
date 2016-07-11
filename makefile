@@ -1,8 +1,8 @@
 CC=g++
 LIBS=-lSDL2
 CFLAGS=-Wall -Wextra -Werror -std=c++11 -Og
-DEPS=ascentapp.h sprites.h region.h engine.h
-OBJ=main.o ascentapp.o region.o engine.o
+DEPS=ascentapp.h general.h region.h engine.h
+OBJ=main.o ascentapp.o region.o engine.o fov.o
 
 all: ascentrl
 

@@ -4,51 +4,11 @@
 #include <utility>
 #include <map>
 #include <vector>
-#include "sprites.h"
+#include "general.h"
 
 class Region;
 
-using Point = std::pair<int, int>;
 
-/// @brief Enum to hold directions
-enum class Direction : uint8_t {
-	Up,
-	Right,
-	Left,
-	Down,
-	UpRight,
-	DownRight,
-	DownLeft,
-	UpLeft
-};
-
-/// @brief Get the "oppisite" direction to the one provided
-///
-/// @param direction A direction
-///
-/// @return The opposite direction, or Direction::Up if not a valid direction
-inline Direction oppositeDirection(Direction direction) {
-	switch (direction) {
-		case Direction::Up:
-			return Direction::Down;
-		case Direction::Right:
-			return Direction::Left;
-		case Direction::Left:
-			return Direction::Right;
-		case Direction::Down:
-			return Direction::Up;
-		case Direction::UpRight:
-			return Direction::DownLeft;
-		case Direction::DownRight:
-			return Direction::UpLeft;
-		case Direction::DownLeft:
-			return Direction::UpRight;
-		case Direction::UpLeft:
-			return Direction::DownRight;
-		default:
-			return Direction::Up;
-	}
-}
 
 /// @brief Hold a connnection between regions
 struct Connection {

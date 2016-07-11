@@ -4,7 +4,7 @@
 #include <utility>
 #include <random>
 #include <vector>
-#include "sprites.h"
+#include "general.h"
 #include "region.h"
 
 /// @brief Minium size of a room
@@ -14,9 +14,6 @@
 
 /// @brief The radius of the field of view
 #define FOV_RADIUS 9
-
-/// @brief Point pair
-using Point = std::pair<int, int>;
 
 /// @brief Background/foreground pair
 using BaF = std::pair<Background, Foreground>;
@@ -55,15 +52,23 @@ class Engine {
 		/// @brief Map of visible squares, accessed indirectly by the app
 		std::map<Point, Visibility>* visiblelocations = NULL;
 
-		/// @brief Converter between point relative to current position and actual location
+		/// @brief Converter between point (relative to current position) and actual location
 		///
-		/// @param point Point relative to currentPosition
+		/// @param point Point (relative to currentPosition)
+		/// @param relto Point relative to what
 		///
 		/// @return Pair of foreground/background
-		BaF relBaF(Point point);
+		BaF relBaF(Point point, const Point & relto);
 
 		/// @brief Refresh field of view map
 		void refreshFOV();
+
+		/// @brief Get the FOV from and relative to a point
+		///
+		/// @param point The point (e.g. currentPosition)
+		///
+		/// @return A new std::map of visibility, relative to point
+		std::map<Point, Visibility>* FOV(Point point);
 
 	public:
 		/// @brief Constructor
