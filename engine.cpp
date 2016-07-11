@@ -121,6 +121,9 @@ void Engine::refreshFOV() {
 	};
 	(*visiblelocations)[Point(0,0)] = curvs;
 	
+	// An implementation of Restrictive Precise Angle Shadowcasting, 
+	// as described at http://www.roguebasin.com/index.php?title=Restrictive_Precise_Angle_Shadowcasting&oldid=40520
+
 	using AnglePair = std::pair<double, double>;
 
 	std::vector<AnglePair> * currentBlocked = new std::vector<AnglePair>;
