@@ -83,15 +83,15 @@ BaF Engine::relBaF(Point point, const Point & relto) {
 		activeRegion->getBackground(relpt),
 		activeRegion->getForeground(relpt)
 	};
-//	if (altRegionLoaded && activeBaF.first == Background::EMPTYNESS) {
-	if (altRegionLoaded) {
-		Point altrelpt = PAIR_SUM(relto, altDisplacement);
+	if (altRegionLoaded && activeBaF.first == Background::EMPTYNESS) {
+//	if (altRegionLoaded) {
+		Point altrelpt = PAIR_SUM(relpt, altDisplacement);
 		
 		BaF altBaF = {
 			alternateRegion->getBackground(altrelpt),
 			alternateRegion->getForeground(altrelpt)
 		};
-		printf("{%d. %d}: %d; {%d, %d}: %d; {%d, %d}\n", relpt.first, relpt.second, (int)activeBaF.first, altrelpt.first, altrelpt.second, (int)altBaF.first, altDisplacement.first, altDisplacement.second);
+//		printf("{%d, %d}, {%d. %d}: %d; {%d, %d}: %d; {%d, %d}\n", point.first, point.second, relpt.first, relpt.second, (int)activeBaF.first, altrelpt.first, altrelpt.second, (int)altBaF.first, altDisplacement.first, altDisplacement.second);
 		if (altBaF.first != Background::EMPTYNESS) {
 			return altBaF;
 		}
@@ -109,7 +109,7 @@ void Engine::refreshFOV() {
 void Engine::manageAltRegion() {
 	if (activeRegion->getBackground(currentPosition) == Background::Door) {
 		Connection tc = activeRegion->connectionAt(currentPosition);
-		printf("manageAltRegion(), 0x%lx\n", (long int)tc.to);
+//		printf("manageAltRegion(), 0x%lx\n", (long int)tc.to);
 		if (tc.to != NULL) {
 			alternateRegion = tc.to;
 			altDisplacement = PAIR_SUBTRACT(
@@ -141,7 +141,7 @@ void Engine::manageAltRegion() {
 				delete nr;
 				return;
 			}
-			printf("Attached\n");
+//			printf("Attached\n");
 			regions.push_back(nr);
 			alternateRegion = nr;
 			altDisplacement = PAIR_SUBTRACT(
@@ -149,10 +149,7 @@ void Engine::manageAltRegion() {
 					currentPosition
 					);
 			altRegionLoaded = true;
-			printf("{%d, %d}, {%d, %d}, {%d, %d}\n", altDisplacement.first, altDisplacement.second, currentPosition.first, currentPosition.second, freept.first.first, freept.first.second);
-
-			
-			
+//			printf("{%d, %d}, {%d, %d}, {%d, %d}\n", altDisplacement.first, altDisplacement.second, currentPosition.first, currentPosition.second, freept.first.first, freept.first.second);
 		}
 	} else {
 		altRegionLoaded = false;
@@ -164,7 +161,7 @@ void Engine::swapRegions() {
 	manageAltRegion();
 	if (!altRegionLoaded)
 		return;
-	printf("Swapping");
+//	printf("Swapping\n");
 	activeRegion->setForeground(currentPosition, underForeground);
 	Point npos = PAIR_SUM(currentPosition, altDisplacement);
 	Point nad = PAIR_SUBTRACT(Point(0,0), altDisplacement);
