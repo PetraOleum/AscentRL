@@ -40,11 +40,11 @@ std::map<Point, Visibility>* Engine::FOV(Point point) {
 				bool startingAngleBlocked = false;
 				bool tcs = true;
 				for (auto ap : *currentBlocked) {
-					if (startingAngle >= ap.first && startingAngle < ap.second)
+					if (startingAngle >= ap.first && startingAngle <= ap.second)
 						startingAngleBlocked = true;
-					if (endingAngle > ap.first && endingAngle <= ap.second)
+					if (endingAngle >= ap.first && endingAngle <= ap.second)
 						endingAngleBlocked = true;
-					if (centreAngle > ap.first && centreAngle < ap.second)
+					if (centreAngle >= ap.first && centreAngle <= ap.second)
 						centreAngleBlocked = true;
 					if (tct) {
 						if (centreAngleBlocked || (startingAngleBlocked && endingAngleBlocked)) {
@@ -106,11 +106,11 @@ std::map<Point, Visibility>* Engine::FOV(Point point) {
 				bool startingAngleBlocked = false;
 				bool tcs = true;
 				for (auto ap : *currentBlocked) {
-					if (startingAngle >= ap.first && startingAngle < ap.second)
+					if (startingAngle >= ap.first && startingAngle <= ap.second)
 						startingAngleBlocked = true;
-					if (endingAngle > ap.first && endingAngle <= ap.second)
+					if (endingAngle >= ap.first && endingAngle <= ap.second)
 						endingAngleBlocked = true;
-					if (centreAngle > ap.first && centreAngle < ap.second)
+					if (centreAngle >= ap.first && centreAngle <= ap.second)
 						centreAngleBlocked = true;
 					if (tct) {
 						if (centreAngleBlocked || (startingAngleBlocked && endingAngleBlocked)) {
