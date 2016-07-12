@@ -140,3 +140,10 @@ std::pair<Point, bool> Region::freeConnection(Direction dir) {
 		false
 	};
 }
+
+bool Region::markDoor(Point point) {
+	if (getBackground(point) != Background::Door)
+		return false;
+	points[point] = Background::MarkedDoor;
+	return true;
+}

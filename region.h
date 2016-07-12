@@ -136,6 +136,13 @@ class Region {
 		/// @return Pair of the point, and true/false is free
 		std::pair<Point, bool> freeConnection(Direction dir);
 
+		/// @brief Mark a door
+		///
+		/// @param point Point to mark at
+		///
+		/// @return Success/fail
+		bool markDoor(Point point);
+
 };
 
 

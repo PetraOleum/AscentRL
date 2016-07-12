@@ -115,6 +115,7 @@ void Engine::refreshFOV() {
 void Engine::manageAltRegion() {
 	Background cpb = activeRegion->getBackground(currentPosition);
 	if (cpb == Background::Door || cpb == Background::MarkedDoor) {
+		if (cpb == Background::Door) activeRegion->markDoor(currentPosition);
 		Connection tc = activeRegion->connectionAt(currentPosition);
 //		printf("manageAltRegion(), 0x%lx\n", (long int)tc.to);
 		if (tc.to != NULL) {
@@ -123,6 +124,8 @@ void Engine::manageAltRegion() {
 					tc.toLocation,
 					currentPosition
 					);
+			if (alternateRegion->getBackground(tc.toLocation) == Background::Door)
+				alternateRegion->markDoor(tc.toLocation);
 			altRegionLoaded = true;
 		} else {
 			Region * nr = new Region(4, 4, RoomType::Room);
@@ -155,6 +158,8 @@ void Engine::manageAltRegion() {
 					freept.first,
 					currentPosition
 					);
+			if (alternateRegion->getBackground(freept.first) == Background::Door)
+				alternateRegion->markDoor(freept.first);
 			altRegionLoaded = true;
 //			printf("{%d, %d}, {%d, %d}, {%d, %d}\n", altDisplacement.first, altDisplacement.second, currentPosition.first, currentPosition.second, freept.first.first, freept.first.second);
 		}
