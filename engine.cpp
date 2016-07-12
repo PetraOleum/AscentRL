@@ -10,7 +10,7 @@ Engine::Engine() {
 
 	//Temp stuff with 1 region
 	
-	activeRegion = new Region(20, 10, RoomType::Room);
+	activeRegion = new Region(10, 10, RoomType::Room);
 	activeRegion->setForeground(currentPosition, Foreground::Witch);
 	regions.push_back(activeRegion);
 	refreshFOV();
@@ -128,7 +128,10 @@ void Engine::manageAltRegion() {
 				alternateRegion->markDoor(tc.toLocation);
 			altRegionLoaded = true;
 		} else {
-			Region * nr = new Region(4, 4, RoomType::Room);
+			RoomType nrt = (activeRegion->Type() == RoomType::Room)
+				? RoomType::Corridor : RoomType::Room;
+			printf("%d -> %d\n", (int)activeRegion->Type(), (int)nrt);
+			Region * nr = new Region(10, 10, nrt);
 			auto freept = nr->freeConnection(oppositeDirection(tc.direction));
 			
 			if (!freept.second) {

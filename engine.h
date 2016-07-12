@@ -13,7 +13,7 @@
 #define MAX_ROOM_DIMENSION 10
 
 /// @brief The radius of the field of view
-#define FOV_RADIUS 9
+#define FOV_RADIUS 15
 
 /// @brief Background/foreground pair
 using BaF = std::pair<Background, Foreground>;

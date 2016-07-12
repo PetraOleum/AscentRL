@@ -15,6 +15,7 @@ Region::Region(int w, int h, RoomType type) {
 	}
 	width = w;
 	height = h;
+	this->type = type;
 	switch (type) {
 		case RoomType::Room:
 			for (int x = 0; x < w; x++) {
@@ -39,20 +40,21 @@ Region::Region(int w, int h, RoomType type) {
 			for (int x = -1; x <= w; x++)
 				for (int y = -1; y <= h; y++)
 					points[Point(x, y)] = Background::StoneWall;
-			if (w > h) {
+			{
 				std::uniform_int_distribution<int> ydist(0, h - 1);
 				int y = ydist(gen);
 				for (int x = 0; x < w; x++)
 					points[Point(x, y)] = Background::TiledFloor;
-				points[Point(-1, y)] = Background::Door;
-				points[Point(w, y)] = Background::Door;
-			} else {
+				addrandomemptyconnection(Direction::Left, Point(-1, y));
+				addrandomemptyconnection(Direction::Right, Point(w, y));
+			} 
+			{
 				std::uniform_int_distribution<int> xdist(0, w - 1);
 				int x = xdist(gen);
 				for (int y = 0; y < h; y++)
 					points[Point(x, y)] = Background::TiledFloor;
-				points[Point(x, -1)] = Background::Door;
-				points[Point(x, h)] = Background::Door;
+				addrandomemptyconnection(Direction::Up, Point(x, -1));
+				addrandomemptyconnection(Direction::Down, Point(x, h));
 			}
 			break;
 		default:
@@ -84,20 +86,7 @@ bool Region::addrandomemptyconnection(Direction direction) {
 			return false;
 	};
 
-	if (points[p] == Background::Door || points[p] == Background::MarkedDoor)
-		return false;
-
-	points[p] = Background::Door;
-
-	Connection nConnection = {
-		p,
-		NULL,
-		Point(0, 0),
-		direction
-	};
-//	connections.push_back(nConnection);
-	connections[p] = nConnection;
-	return true;
+	return addrandomemptyconnection(direction, p);
 }
 
 bool Region::connectTo(Region* to, Direction direction, Point opoint, Point dpoint) {
@@ -145,5 +134,23 @@ bool Region::markDoor(Point point) {
 	if (getBackground(point) != Background::Door)
 		return false;
 	points[point] = Background::MarkedDoor;
+	return true;
+}
+
+bool Region::addrandomemptyconnection(Direction direction, Point location) {
+
+	if (points[location] == Background::Door || points[location] == Background::MarkedDoor)
+		return false;
+
+	points[location] = Background::Door;
+
+	Connection nConnection = {
+		location,
+		NULL,
+		Point(0, 0),
+		direction
+	};
+//	connections.push_back(nConnection);
+	connections[location] = nConnection;
 	return true;
 }

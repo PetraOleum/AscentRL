@@ -54,6 +54,10 @@ class Region {
 		///
 		/// @return Success/fail
 		bool addrandomemptyconnection(Direction direction);
+
+		bool addrandomemptyconnection(Direction direction, Point location);
+
+		RoomType type;
 		
 	public:
 		/// @brief Constructor
@@ -142,6 +146,13 @@ class Region {
 		///
 		/// @return Success/fail
 		bool markDoor(Point point);
+
+		/// @brief Expose the room type
+		///
+		/// @return Reference to the roomtype
+		inline const RoomType & Type() {
+			return type;
+		}
 
 };
 
