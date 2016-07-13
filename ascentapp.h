@@ -155,6 +155,11 @@ class AscentApp {
 		/// @param ysquare Square y coord
 		void renderForeground(Foreground foreground, int xsquare, int ysquare);
 
+		/* Controls stuff */
+
+		/// @brief Planned moves
+		std::queue<Direction> plan;
+
 	public:
 		/// @brief Constructor
 		AscentApp() {

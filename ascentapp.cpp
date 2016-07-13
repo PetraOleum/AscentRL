@@ -54,6 +54,13 @@ bool AscentApp::OnInit() {
 
 void AscentApp::OnLoop() {
 
+	if (!plan.empty()) {
+		if (!engine->Move(plan.front())) {
+			while (!plan.empty())
+				plan.pop();
+		} else
+			plan.pop();
+	}
 }
 
 void AscentApp::OnRender() {
@@ -101,6 +108,21 @@ void AscentApp::OnEvent(SDL_Event* event) {
 		case SDL_KEYDOWN:
 			onKeyDown(&event->key);
 			break;
+		case SDL_MOUSEBUTTONDOWN:
+			{
+				Point dest = {
+					mouseSquareX - numSquaresX / 2,
+					mouseSquareY - numSquaresY / 2
+				};
+				std::queue<Direction> * moves = engine->astar(Point(0,0), dest, engine->getCurrentPosition());
+				while (!moves->empty()) {
+//					printf("%d\n", (int)moves->front());
+					plan.push(moves->front());
+					moves->pop();
+				}
+				delete moves;
+//				printf("\n");
+			}
 		default:
 			break;
 	}
@@ -141,31 +163,31 @@ void AscentApp::onKeyDown(SDL_KeyboardEvent * keyEvent) {
 			break;
 		case SDLK_LEFT:
 		case SDLK_h:
-			engine->Move(Direction::Left);
+			plan.push(Direction::Left);
 			break;
 		case SDLK_RIGHT:
 		case SDLK_l:
-			engine->Move(Direction::Right);
+			plan.push(Direction::Right);
 			break;
 		case SDLK_UP:
 		case SDLK_k:
-			engine->Move(Direction::Up);
+			plan.push(Direction::Up);
 			break;
 		case SDLK_DOWN:
 		case SDLK_j:
-			engine->Move(Direction::Down);
+			plan.push(Direction::Down);
 			break;
 		case SDLK_y:
-			engine->Move(Direction::UpLeft);
+			plan.push(Direction::UpLeft);
 			break;
 		case SDLK_u:
-			engine->Move(Direction::UpRight);
+			plan.push(Direction::UpRight);
 			break;
 		case SDLK_b:
-			engine->Move(Direction::DownLeft);
+			plan.push(Direction::DownLeft);
 			break;
 		case SDLK_n:
-			engine->Move(Direction::DownRight);
+			plan.push(Direction::DownRight);
 			break;
 		default:
 			break;

@@ -1,4 +1,5 @@
 #include "engine.h"
+#include <stack>
 
 Engine::Engine() {
 	std::random_device rn;
@@ -187,4 +188,86 @@ void Engine::swapRegions() {
 	altDisplacement = nad;
 	underForeground = activeRegion->getForeground(currentPosition);
 	activeRegion->setForeground(currentPosition, Foreground::Witch);
+}
+
+std::queue<Direction> * Engine::astar(Point start, Point finish, Point relativeTo) {
+	using movement_cost_t = double;
+	using move_t = std::pair<Point, Direction>;
+	using costandmove = std::pair<movement_cost_t, move_t>;
+	std::queue<Direction> * directions = new std::queue<Direction>;
+
+
+	std::priority_queue<costandmove, std::vector<costandmove>, std::greater<costandmove> > fronteir;
+	fronteir.push( 
+			{
+				0.0,
+				{
+					start,
+					Direction::Up
+				} 
+			});
+
+	std::map<Point, move_t> came_from;
+	came_from[start] = {
+		start,
+		Direction::Up
+	};
+	std::map<Point, movement_cost_t> cost_so_far;
+	cost_so_far[start] = 0.0;
+	bool success = false;
+	while (!fronteir.empty()) {
+		auto current_state = fronteir.top();
+		Point current = current_state.second.first;
+		if (current == finish) {
+			success = true;
+		}
+		movement_cost_t current_cost = current_state.first;
+		fronteir.pop();
+		for (const auto & disp : displacementMap) {
+			move_t next = {
+				PAIR_SUM(disp.second, current),
+				disp.first
+			};
+			BaF nbaf = relBaF(next.first, relativeTo);
+			if (!bkgrProps.at(nbaf.first).passible)
+				continue;
+			movement_cost_t new_cost = ((disp.second.first != 0 && disp.second.second != 0) ? 1.41421356237 : 1) + current_cost;
+			if (cost_so_far.find(next.first) == cost_so_far.end()) {
+				fronteir.push(std::make_pair(new_cost, next));
+				came_from[next.first] = {
+					current,
+					disp.first
+				};
+				cost_so_far[next.first] = new_cost;
+			} else if (cost_so_far[next.first] > new_cost) {
+				fronteir.push(std::make_pair(new_cost, next));
+				came_from[next.first] = {
+					current,
+					disp.first
+				};
+				cost_so_far[next.first] = new_cost;
+				
+			}
+
+		}
+
+	}
+
+	if (!success)
+		return directions;
+
+	std::stack<Direction> rpath;
+	Point c2 = finish;
+	while (c2 != start) {
+		move_t cfm = came_from[c2];
+		c2 = cfm.first;
+		rpath.push(cfm.second);
+	}
+
+	while (!rpath.empty()) {
+		directions->push(rpath.top());
+		rpath.pop();
+	}
+
+	return directions;
 }
