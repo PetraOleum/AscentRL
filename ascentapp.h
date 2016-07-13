@@ -8,6 +8,7 @@
 #include "general.h"
 #include "engine.h"
 
+/// @brief 1000 / FPS
 #define LOOP_TIME (1000/30)
 
 #define INIT_SCREEN_WIDTH 500
@@ -15,6 +16,7 @@
 
 #define SQUARE_SIZE 32
 
+/// @brief The app class
 class AscentApp {
 	private:
 		/// @brief Pointer to the engine

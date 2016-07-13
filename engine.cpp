@@ -130,7 +130,7 @@ void Engine::manageAltRegion() {
 		} else {
 			RoomType nrt = (activeRegion->Type() == RoomType::Room)
 				? RoomType::Corridor : RoomType::Room;
-			printf("%d -> %d\n", (int)activeRegion->Type(), (int)nrt);
+//			printf("%d -> %d\n", (int)activeRegion->Type(), (int)nrt);
 			Region * nr = new Region(10, 10, nrt);
 			auto freept = nr->freeConnection(oppositeDirection(tc.direction));
 			

@@ -58,6 +58,7 @@ class Engine {
 		/// @brief Manage the alternate region
 		void manageAltRegion();
 
+		/// @brief Swap the alternate and active regions
 		void swapRegions();
 
 		/// @brief Temp variable for the foreground of the square you're in

@@ -55,8 +55,15 @@ class Region {
 		/// @return Success/fail
 		bool addrandomemptyconnection(Direction direction);
 
+		/// @brief Add a not-actually random connection at a specific point
+		///
+		/// @param direction The direction
+		/// @param location The location
+		///
+		/// @return Success/fail
 		bool addrandomemptyconnection(Direction direction, Point location);
 
+		/// @brief The type of room this is
 		RoomType type;
 		
 	public:
