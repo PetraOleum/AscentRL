@@ -65,8 +65,11 @@ class Region {
 
 		/// @brief The type of room this is
 		RoomType type;
-		
+
 	public:
+		/// @brief Record of the "position" of the region
+		Point position;
+		
 		/// @brief Constructor
 		///
 		/// @param w Width

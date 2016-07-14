@@ -8,10 +8,12 @@ Engine::Engine() {
 			MIN_ROOM_DIMENSION, 
 			MAX_ROOM_DIMENSION
 			);
+	probdist = std::uniform_real_distribution<double>(0, 1);
 
 	//Temp stuff with 1 region
 	
 	activeRegion = new Region(10, 10, RoomType::Room);
+	activeRegion->position = { 0, 0 };
 	activeRegion->setForeground(currentPosition, Foreground::Witch);
 	regions.push_back(activeRegion);
 	refreshFOV();
@@ -132,31 +134,52 @@ void Engine::manageAltRegion() {
 			RoomType nrt = (activeRegion->Type() == RoomType::Room)
 				? RoomType::Corridor : RoomType::Room;
 //			printf("%d -> %d\n", (int)activeRegion->Type(), (int)nrt);
-			Region * nr = new Region(10, 10, nrt);
-			auto freept = nr->freeConnection(oppositeDirection(tc.direction));
+			Region * nr = NULL;
+			std::pair<Point, bool> freept;
+			Point rpoint = PAIR_SUM(activeRegion->position, DISPLACEMENT(tc.direction));
+			bool foundfree = false;
+			if (probdist(randomengine) < EXISTING_ROOM_PROB)
+				for (auto &&tr : regions) 
+					if (tr->position == rpoint) {
+						freept = tr->freeConnection(oppositeDirection(tc.direction));
+						if (freept.second) {
+							nr = tr;
+							foundfree = true;
+							break;
+						}
+					}
+			if (!foundfree) {
+				nr = new Region(roomdist(randomengine), roomdist(randomengine), nrt);
+				nr->position = rpoint;
+				freept = nr->freeConnection(oppositeDirection(tc.direction));
+			}
 			
 			if (!freept.second) {
 				altRegionLoaded = false;
 				alternateRegion = NULL;
-				delete nr;
+				if (!foundfree)
+					delete nr;
 				return;
 			}
 			if (!activeRegion->connectTo(nr, tc.direction, currentPosition, freept.first)) {
 				fprintf(stderr, "This should not have happened: error connecting activeRegion to nr\n");
 				altRegionLoaded = false;
 				alternateRegion = NULL;
-				delete nr;
+				if (!foundfree)
+					delete nr;
 				return;
 			}
 			if (!nr->connectTo(activeRegion, oppositeDirection(tc.direction), freept.first, currentPosition)) {
 				fprintf(stderr, "This should not have happened: error connecting nr to activeRegion (note: corrupted activeRegion)\n");
 				altRegionLoaded = false;
 				alternateRegion = NULL;
-				delete nr;
+				if (!foundfree)
+					delete nr;
 				return;
 			}
 //			printf("Attached\n");
-			regions.push_back(nr);
+			if (!foundfree)
+				regions.push_back(nr);
 			alternateRegion = nr;
 			altDisplacement = PAIR_SUBTRACT(
 					freept.first,

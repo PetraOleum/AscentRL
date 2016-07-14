@@ -9,9 +9,12 @@
 #include "region.h"
 
 /// @brief Minium size of a room
-#define MIN_ROOM_DIMENSION 1
+#define MIN_ROOM_DIMENSION 2
 /// @brief Maximum size of a room
 #define MAX_ROOM_DIMENSION 10
+
+/// @brief Probability of attempting to select existing room
+#define EXISTING_ROOM_PROB 0.80
 
 /// @brief The radius of the field of view
 #define FOV_RADIUS 15
@@ -37,6 +40,9 @@ class Engine {
 
 		/// @brief Distribution for room dimensions
 		std::uniform_int_distribution<int> roomdist;
+
+		/// @brief distribution from 0 to 1
+		std::uniform_real_distribution<double> probdist;
 
 		/// @brief Vector to hold all regions, to allow deletion
 		std::vector<Region*> regions;
