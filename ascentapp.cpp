@@ -163,30 +163,38 @@ void AscentApp::onKeyDown(SDL_KeyboardEvent * keyEvent) {
 			break;
 		case SDLK_LEFT:
 		case SDLK_h:
+		case SDLK_KP_4:
 			plan.push(Direction::Left);
 			break;
 		case SDLK_RIGHT:
 		case SDLK_l:
+		case SDLK_KP_6:
 			plan.push(Direction::Right);
 			break;
 		case SDLK_UP:
 		case SDLK_k:
+		case SDLK_KP_8:
 			plan.push(Direction::Up);
 			break;
 		case SDLK_DOWN:
 		case SDLK_j:
+		case SDLK_KP_2:
 			plan.push(Direction::Down);
 			break;
 		case SDLK_y:
+		case SDLK_KP_7:
 			plan.push(Direction::UpLeft);
 			break;
 		case SDLK_u:
+		case SDLK_KP_9:
 			plan.push(Direction::UpRight);
 			break;
 		case SDLK_b:
+		case SDLK_KP_1:
 			plan.push(Direction::DownLeft);
 			break;
 		case SDLK_n:
+		case SDLK_KP_3:
 			plan.push(Direction::DownRight);
 			break;
 		default:
