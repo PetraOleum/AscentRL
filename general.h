@@ -34,6 +34,8 @@ enum class Foreground : uint8_t {
 	NONE = 0,
 	Witch,
 	Gold,
+	Staff,
+	Chest,
 	TOTAL
 };
 

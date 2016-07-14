@@ -69,9 +69,9 @@ bool Engine::Move(Direction direction) {
 		swapRegions();
 	}
 	activeRegion->setForeground(currentPosition, underForeground);
-	underForeground = activeRegion->getForeground(np);
 //	currentPosition = Point(currentPosition.first + np.first, currentPosition.second + np.second);
 	currentPosition = PAIR_SUM(currentPosition, np);
+	underForeground = activeRegion->getForeground(currentPosition);
 	activeRegion->setForeground(currentPosition, Foreground::Witch);
 	manageAltRegion();
 	refreshFOV();

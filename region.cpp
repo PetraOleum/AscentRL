@@ -7,11 +7,14 @@ std::mt19937 gen;
 bool initgen = false;
 /// @brief A int distribution
 std::uniform_int_distribution<int> idist;
+std::uniform_real_distribution<double> probdist;
 
 Region::Region(int w, int h, RoomType type) {
 	if (!initgen) {
 		std::random_device rd;
 		gen = std::mt19937(rd());
+		probdist = std::uniform_real_distribution<double>(0, 1);
+		initgen = true;
 	}
 	width = w;
 	height = h;
@@ -20,7 +23,14 @@ Region::Region(int w, int h, RoomType type) {
 		case RoomType::Room:
 			for (int x = 0; x < w; x++) {
 				for (int y = 0; y < h; y++) {
-					points[Point(x, y)] = Background::TiledFloor;
+					Point tp = Point(x, y);
+					points[tp] = Background::TiledFloor;
+					if (probdist(gen) < GOLD_PROB)
+						foreground[tp] = Foreground::Gold;
+					if (probdist(gen) < STAFF_PROB)
+						foreground[tp] = Foreground::Staff;
+					if (probdist(gen) < CHEST_PROB)
+						foreground[tp] = Foreground::Chest;
 				}
 				points[Point(x, -1)] = Background::StoneWall;
 				points[Point(x, h)] = Background::StoneWall;
