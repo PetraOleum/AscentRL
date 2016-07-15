@@ -56,6 +56,19 @@ const std::map<Background, BackgroundProperties> bkgrProps = {
 	{Background::TOTAL, {false, false}}
 };
 
+struct ForegroundProperties {
+	const char* name;
+};
+
+const std::map<Foreground, ForegroundProperties> foreProps = {
+	{Foreground::NONE, {"None"}},
+	{Foreground::Witch, {"Witch"}},
+	{Foreground::Gold, {"Gold"}},
+	{Foreground::Staff, {"Staff"}},
+	{Foreground::Chest, {"Chest"}},
+	{Foreground::TOTAL, {"\"Total\" element"}}
+};
+
 /// @brief Enum to hold directions
 enum class Direction : uint8_t {
 	Up,

@@ -96,7 +96,7 @@ void AscentApp::OnRender() {
 				xos + tqss,
 				yos + SQUARE_SIZE - 1);
 	}
-
+	drawStatusBox();
 	SDL_RenderPresent(renderer);
 }
 
@@ -285,4 +285,11 @@ void AscentApp::renderForeground(Foreground foreground, int xsquare, int ysquare
 		SQUARE_SIZE
 	};
 	SDL_RenderCopy(renderer, foregroundSpriteSheet, &orect, &drect);
+}
+
+void AscentApp::drawStatusBox() {
+	Foreground tb = engine->underWitch();
+	if (tb != Foreground::NONE) {
+		printf("Here: %s\n", foreProps.at(tb).name);
+	}
 }

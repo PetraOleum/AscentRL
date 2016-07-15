@@ -42,6 +42,8 @@ class AscentApp {
 		/// @param keyEvent The event data
 		void onKeyDown(SDL_KeyboardEvent * keyEvent);
 
+		void drawStatusBox();
+
 		/* Translating between pixels on the screen and squares */
 		
 		/// @brief Mouse position (X)
