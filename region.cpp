@@ -40,10 +40,19 @@ Region::Region(int w, int h, RoomType type) {
 				points[Point(w, y)] = Background::StoneWall;
 			}
 //			points[Point(5, 3)] = Background::DirtWall;
-			numConnections = 0;
-			for (uint8_t i = 0; i < 4; i++) {
-				if (addrandomemptyconnection((Direction)i))
-					numConnections++;
+			{
+				idist = std::uniform_int_distribution<int>(4, 6);
+				int maxconnections = idist(gen);
+				numConnections = 0;
+				idist = std::uniform_int_distribution<int>(0, 4);
+				for (uint8_t i = 0; i < 4; i++) {
+					if (addrandomemptyconnection((Direction)(i)))
+						numConnections++;
+				}
+				for (uint8_t i = 4; i < maxconnections; i++) {
+					if (addrandomemptyconnection((Direction)(idist(gen))))
+						numConnections++;
+				}
 			}
 			break;
 		case RoomType::Corridor:
