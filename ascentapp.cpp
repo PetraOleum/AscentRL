@@ -109,7 +109,7 @@ void AscentApp::OnEvent(SDL_Event* event) {
 			onKeyDown(&event->key);
 			break;
 		case SDL_MOUSEBUTTONDOWN:
-			{
+			if (mouseInSquares && event->button.button == SDL_BUTTON_LEFT) {
 				Point dest = {
 					mouseSquareX - numSquaresX / 2,
 					mouseSquareY - numSquaresY / 2

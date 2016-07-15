@@ -219,7 +219,6 @@ std::queue<Direction> * Engine::astar(Point start, Point finish, Point relativeT
 	using costandmove = std::pair<movement_cost_t, move_t>;
 	std::queue<Direction> * directions = new std::queue<Direction>;
 
-
 	std::priority_queue<costandmove, std::vector<costandmove>, std::greater<costandmove> > fronteir;
 	fronteir.push( 
 			{
@@ -237,7 +236,14 @@ std::queue<Direction> * Engine::astar(Point start, Point finish, Point relativeT
 	};
 	std::map<Point, movement_cost_t> cost_so_far;
 	cost_so_far[start] = 0.0;
+
 	bool success = false;
+	std::map<Point, Visibility> * myfov = FOV(relativeTo);
+
+	if (!bkgrProps.at((*myfov)[start].background).passible) {
+		delete myfov;
+		return directions;
+	}
 	while (!fronteir.empty()) {
 		auto current_state = fronteir.top();
 		Point current = current_state.second.first;
@@ -251,8 +257,9 @@ std::queue<Direction> * Engine::astar(Point start, Point finish, Point relativeT
 				PAIR_SUM(disp.second, current),
 				disp.first
 			};
-			BaF nbaf = relBaF(next.first, relativeTo);
-			if (!bkgrProps.at(nbaf.first).passible)
+			Background nb = (*myfov)[next.first].background;
+//			BaF nbaf = relBaF(next.first, relativeTo);
+			if (!bkgrProps.at(nb).passible)
 				continue;
 			movement_cost_t new_cost = ((disp.second.first != 0 && disp.second.second != 0) ? 1.41421356237 : 1) + current_cost;
 			if (cost_so_far.find(next.first) == cost_so_far.end()) {
@@ -275,6 +282,7 @@ std::queue<Direction> * Engine::astar(Point start, Point finish, Point relativeT
 		}
 
 	}
+	delete myfov;
 
 	if (!success)
 		return directions;
