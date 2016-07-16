@@ -3,6 +3,7 @@
 
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_ttf.h>
+#include <string>
 #include <cstdint>
 #include <map>
 
@@ -17,7 +18,9 @@
 
 #define FONT_PATH "font/liberation-serif/LiberationSerif-Regular.ttf"
 
-#define FONT_POINT 12
+#define FONT_POINT 16
+
+#define MESSAGE_BORDER 8
 
 #define SQUARE_SIZE 32
 
@@ -35,6 +38,9 @@ class AscentApp {
 
 		/// @brief The font (liberation serif)
 		TTF_Font *font = NULL;
+
+		/// @brief The status message
+		SDL_Texture* statusMessage = NULL;
 
 		/// @brief Holds the window
 		SDL_Window* window = NULL;
