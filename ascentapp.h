@@ -2,6 +2,7 @@
 #define ASCENTAPP_H
 
 #include <SDL2/SDL.h>
+#include <SDL2/SDL_ttf.h>
 #include <cstdint>
 #include <map>
 
@@ -13,6 +14,10 @@
 
 #define INIT_SCREEN_WIDTH 500
 #define INIT_SCREEN_HEIGHT 500
+
+#define FONT_PATH "font/liberation-serif/LiberationSerif-Regular.ttf"
+
+#define FONT_POINT 12
 
 #define SQUARE_SIZE 32
 
@@ -27,6 +32,9 @@ class AscentApp {
 
 		/// @brief Is the app fullscreen
 		bool fullscreen = false;
+
+		/// @brief The font (liberation serif)
+		TTF_Font *font = NULL;
 
 		/// @brief Holds the window
 		SDL_Window* window = NULL;

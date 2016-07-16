@@ -38,6 +38,15 @@ bool AscentApp::OnInit() {
 		fprintf(stderr, "Window could not be created. SDL error: %s\n", SDL_GetError());
 		return false;
 	}
+	if (TTF_Init() == -1) {
+		fprintf(stderr, "Could not initliase SDL_ttf: %s\n", TTF_GetError());
+		return false;
+	}
+	font = TTF_OpenFont(FONT_PATH, FONT_POINT);
+	if (font == NULL) {
+		fprintf(stderr, "Could not load font: %s\n", TTF_GetError());
+		return false;
+	}
 	screensurface = SDL_GetWindowSurface(window);
 	if ((renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED)) == NULL) {
 		fprintf(stderr, "Could not create renderer. SDL error: %s\n", SDL_GetError());
@@ -131,10 +140,14 @@ void AscentApp::OnEvent(SDL_Event* event) {
 void AscentApp::OnCleanup() {
 	delete engine;
 	SDL_DestroyTexture(backgroundSpriteSheet);
+	TTF_CloseFont(font);
+	font = NULL;
+
 	SDL_DestroyWindow(window);
 	SDL_DestroyRenderer(renderer);
 	window = NULL;
 	renderer = NULL;
+	TTF_Quit();
 	SDL_Quit();
 }
 
