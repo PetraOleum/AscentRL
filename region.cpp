@@ -41,7 +41,7 @@ Region::Region(int w, int h, RoomType type) {
 			}
 //			points[Point(5, 3)] = Background::DirtWall;
 			{
-				idist = std::uniform_int_distribution<int>(4, 6);
+				idist = std::uniform_int_distribution<int>(4, 4 + (w + h) / 2);
 				int maxconnections = idist(gen);
 				numConnections = 0;
 				idist = std::uniform_int_distribution<int>(0, 4);
@@ -53,6 +53,7 @@ Region::Region(int w, int h, RoomType type) {
 					if (addrandomemptyconnection((Direction)(idist(gen))))
 						numConnections++;
 				}
+//				printf("%d->%d\n", maxconnections, numConnections);
 			}
 			break;
 		case RoomType::Corridor:
@@ -160,6 +161,12 @@ bool Region::addrandomemptyconnection(Direction direction, Point location) {
 
 	if (points[location] == Background::Door || points[location] == Background::MarkedDoor)
 		return false;
+
+	for (uint8_t i = (uint8_t)Direction::Up; i <= (uint8_t)Direction::Down; i++) {
+		Point pd = PAIR_SUM(location, DISPLACEMENT((Direction)i));
+		if (points[pd] == Background::Door || points[pd] == Background::MarkedDoor)
+			return false;
+	}
 
 	points[location] = Background::Door;
 
