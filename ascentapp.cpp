@@ -38,11 +38,21 @@ bool AscentApp::OnInit() {
 		fprintf(stderr, "Window could not be created. SDL error: %s\n", SDL_GetError());
 		return false;
 	}
+	if (TTF_Init() == -1) {
+		fprintf(stderr, "Could not initliase SDL_ttf: %s\n", TTF_GetError());
+		return false;
+	}
+	font = TTF_OpenFont(FONT_PATH, FONT_POINT);
+	if (font == NULL) {
+		fprintf(stderr, "Could not load font: %s\n", TTF_GetError());
+		return false;
+	}
 	screensurface = SDL_GetWindowSurface(window);
 	if ((renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED)) == NULL) {
 		fprintf(stderr, "Could not create renderer. SDL error: %s\n", SDL_GetError());
 		return false;
 	}
+	SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_BLEND);
 	SDL_SetRenderDrawColor(renderer, 0x00, 0x00, 0x00, 0xFF);
 	if (Init_Background() == false)
 		return false;
@@ -96,7 +106,7 @@ void AscentApp::OnRender() {
 				xos + tqss,
 				yos + SQUARE_SIZE - 1);
 	}
-
+	drawStatusBox();
 	SDL_RenderPresent(renderer);
 }
 
@@ -131,10 +141,14 @@ void AscentApp::OnEvent(SDL_Event* event) {
 void AscentApp::OnCleanup() {
 	delete engine;
 	SDL_DestroyTexture(backgroundSpriteSheet);
+	TTF_CloseFont(font);
+	font = NULL;
+
 	SDL_DestroyWindow(window);
 	SDL_DestroyRenderer(renderer);
 	window = NULL;
 	renderer = NULL;
+	TTF_Quit();
 	SDL_Quit();
 }
 
@@ -285,4 +299,44 @@ void AscentApp::renderForeground(Foreground foreground, int xsquare, int ysquare
 		SQUARE_SIZE
 	};
 	SDL_RenderCopy(renderer, foregroundSpriteSheet, &orect, &drect);
+}
+
+void AscentApp::drawStatusBox() {
+	Foreground tb = engine->underWitch();
+	if (tb != Foreground::NONE) {
+//		printf("Here: %s\n", foreProps.at(tb).name);
+		const char * msg = foreProps.at(tb).name;
+		std::string msgstring = "Here: ";
+		msgstring += msg;
+		SDL_Surface* textSurface = TTF_RenderText_Blended(font, msgstring.c_str(), {0xFF, 0xFF, 0xFF, 0xFF});
+		if (textSurface == NULL) {
+			fprintf(stderr, "Couldn\'t make the text surface. %s\n", TTF_GetError());
+			return;
+		}
+		int message_w = textSurface->w;
+		int message_h = textSurface->h;
+		if (statusMessage != NULL)
+			SDL_DestroyTexture(statusMessage);
+		statusMessage = SDL_CreateTextureFromSurface(renderer, textSurface);
+		SDL_FreeSurface(textSurface);
+		if (statusMessage == NULL) {
+			fprintf(stderr, "Couldn\'t create the text texture. %s\n", SDL_GetError());
+			return;
+		}
+		SDL_Rect messageRect = {
+			MESSAGE_BORDER,
+			windowHeight - message_h - MESSAGE_BORDER,
+			message_w,
+			message_h
+		};
+		SDL_Rect messageBackgroundRect = {
+			0,
+			windowHeight - message_h - MESSAGE_BORDER * 2,
+			message_w + MESSAGE_BORDER * 2,
+			message_h + MESSAGE_BORDER * 2
+		};
+		SDL_SetRenderDrawColor(renderer, 0x00, 0x00, 0x00, 0xC0);
+		SDL_RenderFillRect(renderer, &messageBackgroundRect);
+		SDL_RenderCopy(renderer, statusMessage, NULL, &messageRect);
+	}
 }

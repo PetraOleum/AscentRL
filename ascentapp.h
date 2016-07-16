@@ -2,6 +2,8 @@
 #define ASCENTAPP_H
 
 #include <SDL2/SDL.h>
+#include <SDL2/SDL_ttf.h>
+#include <string>
 #include <cstdint>
 #include <map>
 
@@ -13,6 +15,12 @@
 
 #define INIT_SCREEN_WIDTH 500
 #define INIT_SCREEN_HEIGHT 500
+
+#define FONT_PATH "font/liberation-serif/LiberationSerif-Regular.ttf"
+
+#define FONT_POINT 16
+
+#define MESSAGE_BORDER 8
 
 #define SQUARE_SIZE 32
 
@@ -28,6 +36,12 @@ class AscentApp {
 		/// @brief Is the app fullscreen
 		bool fullscreen = false;
 
+		/// @brief The font (liberation serif)
+		TTF_Font *font = NULL;
+
+		/// @brief The status message
+		SDL_Texture* statusMessage = NULL;
+
 		/// @brief Holds the window
 		SDL_Window* window = NULL;
 
@@ -41,6 +55,8 @@ class AscentApp {
 		///
 		/// @param keyEvent The event data
 		void onKeyDown(SDL_KeyboardEvent * keyEvent);
+
+		void drawStatusBox();
 
 		/* Translating between pixels on the screen and squares */
 		

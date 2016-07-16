@@ -1,5 +1,5 @@
 CC=g++
-LIBS=-lSDL2
+LIBS=-lSDL2 -lSDL2_ttf
 CFLAGS=-Wall -Wextra -Werror -std=c++11 -Og
 DEPS=ascentapp.h general.h region.h engine.h
 OBJ=main.o ascentapp.o region.o engine.o fov.o
