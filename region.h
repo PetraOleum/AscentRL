@@ -7,7 +7,7 @@
 #include "general.h"
 
 #define GOLD_PROB 0.075
-#define STAFF_PROB 0.001
+#define STAFF_PROB 0.003
 #define CHEST_PROB 0.05
 
 class Region;
