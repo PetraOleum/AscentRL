@@ -77,6 +77,15 @@ class Engine {
 		/// @brief Converter between point and actual location
 		///
 		/// @param point Point
+		/// @param relto What point is relative to
+		/// @param region The region point is on
+		///
+		/// @return Pair of Foreground/Background
+		BaF relBaF(Point point, const Point & relto, Region * region);
+
+		/// @brief Converter between point and actual location
+		///
+		/// @param point Point
 		/// @param relto Point relative to what
 		///
 		/// @return Pair of foreground/background

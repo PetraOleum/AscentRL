@@ -79,33 +79,34 @@ bool Engine::Move(Direction direction) {
 	return true;
 }
 
-BaF Engine::relBaF(Point point, const Point & relto) {
-	//Less temporary IMPL?
+BaF Engine::relBaF(Point point, const Point & relto, Region * region) {
 	Point relpt = PAIR_SUM(relto, point);
-	BaF activeBaF = {
-		activeRegion->getBackground(relpt),
-		activeRegion->getForeground(relpt)
+	BaF regionBaF = {
+		region->getBackground(relpt),
+		region->getForeground(relpt)
 	};
-//	if (altRegionLoaded && activeBaF.first == Background::EMPTYNESS) {
-	if (altRegionLoaded) {
-		Direction cdir = activeRegion->connectionAt(currentPosition).direction;
-		Point tpd = DISPLACEMENT(cdir);
-		Point reldiff = PAIR_SUBTRACT(relpt, currentPosition);
-		Point muldirr = PAIR_MULTIPLY(tpd, reldiff);
+	Connection cn = region->connectionAt(relto);
+	if (cn.to != NULL) {
+		Point tpd = DISPLACEMENT(cn.direction);
+		Point muldirr = PAIR_MULTIPLY(tpd, point);
 		if (muldirr.first > 0 || muldirr.second > 0) {
-			Point altrelpt = PAIR_SUM(relpt, altDisplacement);
-			
+			Point altrelpt = PAIR_SUM(relpt, PAIR_SUBTRACT(cn.toLocation, relto));
 			BaF altBaF = {
-				alternateRegion->getBackground(altrelpt),
-				alternateRegion->getForeground(altrelpt)
+				cn.to->getBackground(altrelpt),
+				cn.to->getForeground(altrelpt)
 			};
-	//		printf("{%d, %d}, {%d. %d}: %d; {%d, %d}: %d; {%d, %d}\n", point.first, point.second, relpt.first, relpt.second, (int)activeBaF.first, altrelpt.first, altrelpt.second, (int)altBaF.first, altDisplacement.first, altDisplacement.second);
 			if (altBaF.first != Background::EMPTYNESS) {
 				return altBaF;
 			}
 		}
 	}
-	return activeBaF;
+
+	return regionBaF;
+	
+}
+
+BaF Engine::relBaF(Point point, const Point & relto) {
+	return relBaF(point, relto, activeRegion);
 }
 
 void Engine::refreshFOV() {
