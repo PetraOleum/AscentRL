@@ -12,11 +12,11 @@ Engine::Engine() {
 
 	//Temp stuff with 1 region
 	
-	player = new Creature({0, 0}, activeRegion, CreatureType::Witch);
-	activeRegion = new Region(10, 10, RoomType::Room);
-	activeRegion->position = { 0, 0 };
-	activeRegion->setForeground(player->getPosition(), Foreground::Witch);
-	regions.push_back(activeRegion);
+	Region * StartRegion = new Region(10, 10, RoomType::Room);
+	player = new Creature({0, 0}, StartRegion, CreatureType::Witch);
+	StartRegion->position = { 0, 0 };
+	StartRegion->setForeground(player->getPosition(), Foreground::Witch);
+	regions.push_back(StartRegion);
 	refreshFOV();
 
 }
@@ -62,18 +62,20 @@ Foreground Engine::getForeground(Point point) {
 
 bool Engine::Move(Direction direction) {
 	manageAltRegion(); //Make sure valid
+	Region * playerRegion = player->getRegion();
 	Point np = DISPLACEMENT(direction);
 	Point originalPosition = player->getPosition();
 	Background nb = relBaF(np, originalPosition).first;
 	if (!bkgrProps.at(nb).passible)
 		return false;
-	if (activeRegion->getBackground(PAIR_SUM(np, originalPosition)) != nb) {
+	if (playerRegion->getBackground(PAIR_SUM(np, originalPosition)) != nb) {
 		swapRegions();
 	}
-	activeRegion->setForeground(player->getPosition(), underForeground);
+	playerRegion = player->getRegion();
+	playerRegion->setForeground(player->getPosition(), underForeground);
 	Point newposition = player->movePosition(direction);
-	underForeground = activeRegion->getForeground(newposition);
-	activeRegion->setForeground(newposition, Foreground::Witch);
+	underForeground = playerRegion->getForeground(newposition);
+	playerRegion->setForeground(newposition, Foreground::Witch);
 	manageAltRegion();
 	refreshFOV();
 
@@ -107,7 +109,7 @@ BaF Engine::relBaF(Point point, const Point & relto, Region * region) {
 }
 
 BaF Engine::relBaF(Point point, const Point & relto) {
-	return relBaF(point, relto, activeRegion);
+	return relBaF(point, relto, player->getRegion());
 }
 
 void Engine::refreshFOV() {
@@ -118,10 +120,11 @@ void Engine::refreshFOV() {
 }
 
 void Engine::manageAltRegion() {
-	Background cpb = activeRegion->getBackground(player->getPosition());
+	Region * playerRegion = player->getRegion();
+	Background cpb = playerRegion->getBackground(player->getPosition());
 	if (cpb == Background::Door || cpb == Background::MarkedDoor) {
-		if (cpb == Background::Door) activeRegion->markDoor(player->getPosition());
-		Connection tc = activeRegion->connectionAt(player->getPosition());
+		if (cpb == Background::Door) playerRegion->markDoor(player->getPosition());
+		Connection tc = playerRegion->connectionAt(player->getPosition());
 //		printf("manageAltRegion(), 0x%lx\n", (long int)tc.to);
 		if (tc.to != NULL) {
 			alternateRegion = tc.to;
@@ -133,12 +136,12 @@ void Engine::manageAltRegion() {
 				alternateRegion->markDoor(tc.toLocation);
 			altRegionLoaded = true;
 		} else {
-			RoomType nrt = (activeRegion->Type() == RoomType::Room)
+			RoomType nrt = (playerRegion->Type() == RoomType::Room)
 				? RoomType::Corridor : RoomType::Room;
 //			printf("%d -> %d\n", (int)activeRegion->Type(), (int)nrt);
 			Region * nr = NULL;
 			std::pair<Point, bool> freept;
-			Point rpoint = PAIR_SUM(activeRegion->position, DISPLACEMENT(tc.direction));
+			Point rpoint = PAIR_SUM(playerRegion->position, DISPLACEMENT(tc.direction));
 			bool foundfree = false;
 			if (probdist(randomengine) < EXISTING_ROOM_PROB)
 				for (auto &&tr : regions) 
@@ -163,7 +166,7 @@ void Engine::manageAltRegion() {
 					delete nr;
 				return;
 			}
-			if (!activeRegion->connectTo(nr, tc.direction, player->getPosition(), freept.first)) {
+			if (!playerRegion->connectTo(nr, tc.direction, player->getPosition(), freept.first)) {
 				fprintf(stderr, "This should not have happened: error connecting activeRegion to nr\n");
 				altRegionLoaded = false;
 				alternateRegion = NULL;
@@ -171,7 +174,7 @@ void Engine::manageAltRegion() {
 					delete nr;
 				return;
 			}
-			if (!nr->connectTo(activeRegion, oppositeDirection(tc.direction), freept.first, player->getPosition())) {
+			if (!nr->connectTo(playerRegion, oppositeDirection(tc.direction), freept.first, player->getPosition())) {
 				fprintf(stderr, "This should not have happened: error connecting nr to activeRegion (note: corrupted activeRegion)\n");
 				altRegionLoaded = false;
 				alternateRegion = NULL;
@@ -207,16 +210,18 @@ void Engine::swapRegions() {
 	}
 //	printf("Swapping\n");
 	Point startPosition = player->getPosition();
-	activeRegion->setForeground(startPosition, underForeground);
+	Region * playerStartRegion = player->getRegion();
+	playerStartRegion->setForeground(startPosition, underForeground);
 	Point npos = player->switchRegion(alternateRegion, altDisplacement);
 	Point nad = PAIR_SUBTRACT(Point(0,0), altDisplacement);
-	Region * tmp = activeRegion;
-	activeRegion = alternateRegion;
-	alternateRegion = tmp;
+//	Region * tmp = activeRegion;
+//	activeRegion = alternateRegion;
+	alternateRegion = playerStartRegion;
 //	currentPosition = npos;
 	altDisplacement = nad;
-	underForeground = activeRegion->getForeground(npos);
-	activeRegion->setForeground(npos, Foreground::Witch);
+	Region * newPlayerRegion = player->getRegion();
+	underForeground = newPlayerRegion->getForeground(npos);
+	newPlayerRegion->setForeground(npos, Foreground::Witch);
 //	printf("{%d, %d}; {%d, %d}; {%d, %d}\n", activeRegion->position.first, activeRegion->position.second, alternateRegion->position.first, alternateRegion->position.second, player->getRegion()->position.first, player->getRegion()->position.second);
 }
 

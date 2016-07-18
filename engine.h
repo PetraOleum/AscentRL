@@ -51,12 +51,6 @@ class Engine {
 		/// @brief Vector to hold all regions, to allow deletion
 		std::vector<Region*> regions;
 
-		/// @brief The currently active region
-		Region* activeRegion = NULL;
-
-		/// @brief The current position of the player in the active region
-//		Point currentPosition = Point(0, 0);
-
 		/// @brief The alternate region (if sitting on a door)
 		Region* alternateRegion = NULL;
 
