@@ -7,6 +7,7 @@
 #include <queue>
 #include "general.h"
 #include "region.h"
+#include "creature.h"
 
 /// @brief Minium size of a room
 #define MIN_ROOM_DIMENSION 2
@@ -43,6 +44,9 @@ class Engine {
 
 		/// @brief distribution from 0 to 1
 		std::uniform_real_distribution<double> probdist;
+
+		/// @brief The player creature
+		Creature* player = NULL;
 
 		/// @brief Vector to hold all regions, to allow deletion
 		std::vector<Region*> regions;

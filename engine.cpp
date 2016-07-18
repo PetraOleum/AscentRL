@@ -16,6 +16,7 @@ Engine::Engine() {
 	activeRegion->position = { 0, 0 };
 	activeRegion->setForeground(currentPosition, Foreground::Witch);
 	regions.push_back(activeRegion);
+	player = new Creature({0, 0}, activeRegion, CreatureType::Witch);
 	refreshFOV();
 
 }
@@ -24,6 +25,7 @@ Engine::~Engine() {
 	for (Region* region : regions) {
 		delete region;
 	}
+	delete player;
 }
 
 Background Engine::getBackground(Point point) {
