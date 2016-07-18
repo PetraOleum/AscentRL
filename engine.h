@@ -55,7 +55,7 @@ class Engine {
 		Region* activeRegion = NULL;
 
 		/// @brief The current position of the player in the active region
-		Point currentPosition = Point(0, 0);
+//		Point currentPosition = Point(0, 0);
 
 		/// @brief The alternate region (if sitting on a door)
 		Region* alternateRegion = NULL;
@@ -138,7 +138,7 @@ class Engine {
 		///
 		/// @return currentPosition by value
 		inline Point getCurrentPosition() {
-			return currentPosition;
+			return player->getPosition();
 		}
 
 		/// @brief Run astar to find the fastest route between two points
