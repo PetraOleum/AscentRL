@@ -124,7 +124,7 @@ void AscentApp::OnEvent(SDL_Event* event) {
 					mouseSquareX - numSquaresX / 2,
 					mouseSquareY - numSquaresY / 2
 				};
-				std::queue<Direction> * moves = engine->astar(Point(0,0), dest, engine->getCurrentPosition());
+				std::queue<Direction> * moves = engine->playerAstar(Point(0,0), dest);
 				while (!moves->empty()) {
 //					printf("%d\n", (int)moves->front());
 					plan.push(moves->front());

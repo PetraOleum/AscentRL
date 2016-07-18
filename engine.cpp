@@ -65,7 +65,7 @@ bool Engine::Move(Direction direction) {
 	Region * playerRegion = player->getRegion();
 	Point np = DISPLACEMENT(direction);
 	Point originalPosition = player->getPosition();
-	Background nb = relBaF(np, originalPosition).first;
+	Background nb = relBaF(np, originalPosition, playerRegion).first;
 	if (!bkgrProps.at(nb).passible)
 		return false;
 	if (playerRegion->getBackground(PAIR_SUM(np, originalPosition)) != nb) {
@@ -108,14 +108,14 @@ BaF Engine::relBaF(Point point, const Point & relto, Region * region) {
 	
 }
 
-BaF Engine::relBaF(Point point, const Point & relto) {
-	return relBaF(point, relto, player->getRegion());
-}
+//BaF Engine::relBaF(Point point, const Point & relto) {
+//	return relBaF(point, relto, player->getRegion());
+//}
 
 void Engine::refreshFOV() {
 	if (visiblelocations != NULL)
 		delete visiblelocations;
-	visiblelocations = FOV(player->getPosition());
+	visiblelocations = FOV(player->getPosition(), player->getRegion());
 
 }
 
@@ -225,7 +225,7 @@ void Engine::swapRegions() {
 //	printf("{%d, %d}; {%d, %d}; {%d, %d}\n", activeRegion->position.first, activeRegion->position.second, alternateRegion->position.first, alternateRegion->position.second, player->getRegion()->position.first, player->getRegion()->position.second);
 }
 
-std::queue<Direction> * Engine::astar(Point start, Point finish, Point relativeTo) {
+std::queue<Direction> * Engine::astar(Point start, Point finish, Point relativeTo, Region * region) {
 	using movement_cost_t = double;
 	using move_t = std::pair<Point, Direction>;
 	using costandmove = std::pair<movement_cost_t, move_t>;
@@ -250,7 +250,7 @@ std::queue<Direction> * Engine::astar(Point start, Point finish, Point relativeT
 	cost_so_far[start] = 0.0;
 
 	bool success = false;
-	std::map<Point, Visibility> * myfov = FOV(relativeTo);
+	std::map<Point, Visibility> * myfov = FOV(relativeTo, region);
 
 	if (!bkgrProps.at((*myfov)[start].background).passible) {
 		delete myfov;

@@ -1,9 +1,9 @@
 #include "engine.h"
 
-std::map<Point, Visibility>* Engine::FOV(Point point) {
+std::map<Point, Visibility>* Engine::FOV(Point point, Region * region) {
 	auto visMap = new std::map<Point, Visibility>;
 
-	BaF curpt = relBaF({0,0}, point);
+	BaF curpt = relBaF({0,0}, point, region);
 	Visibility curvs = {
 		true,
 		curpt.first,
@@ -16,7 +16,7 @@ std::map<Point, Visibility>* Engine::FOV(Point point) {
 
 	using AnglePair = std::pair<double, double>;
 
-	auto fovlambda = [visMap, point, this](int xTransform, int yTransform) {
+	auto fovlambda = [visMap, point, region, this](int xTransform, int yTransform) {
 		std::vector<AnglePair> * currentBlocked = new std::vector<AnglePair>;
 		std::vector<AnglePair> * nextLineBlocked = new std::vector<AnglePair>;
 
@@ -33,7 +33,7 @@ std::map<Point, Visibility>* Engine::FOV(Point point) {
 				double startingAngle = x * arange;
 				double endingAngle = startingAngle + arange;
 				double centreAngle = startingAngle + arange / 2;
-				BaF thisCell = relBaF(tp, point);
+				BaF thisCell = relBaF(tp, point, region);
 				bool tct = bkgrProps.at(thisCell.first).transparent;
 				bool centreAngleBlocked = false;
 				bool endingAngleBlocked = false;
@@ -82,7 +82,7 @@ std::map<Point, Visibility>* Engine::FOV(Point point) {
 		delete currentBlocked;
 	};
 	
-	auto fovlambda2 = [visMap, point, this](int xTransform, int yTransform) {
+	auto fovlambda2 = [visMap, point, region, this](int xTransform, int yTransform) {
 		std::vector<AnglePair> * currentBlocked = new std::vector<AnglePair>;
 		std::vector<AnglePair> * nextLineBlocked = new std::vector<AnglePair>;
 
@@ -99,7 +99,7 @@ std::map<Point, Visibility>* Engine::FOV(Point point) {
 				double startingAngle = y * arange;
 				double endingAngle = startingAngle + arange;
 				double centreAngle = startingAngle + arange / 2;
-				BaF thisCell = relBaF(tp, point);
+				BaF thisCell = relBaF(tp, point, region);
 				bool tct = bkgrProps.at(thisCell.first).transparent;
 				bool centreAngleBlocked = false;
 				bool endingAngleBlocked = false;
