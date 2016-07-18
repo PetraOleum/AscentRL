@@ -67,11 +67,11 @@ bool Engine::Move(Direction direction) {
 	Background nb = relBaF(np, originalPosition).first;
 	if (!bkgrProps.at(nb).passible)
 		return false;
-	Point newposition = player->movePosition(direction);
-	if (activeRegion->getBackground(newposition) != nb) {
+	if (activeRegion->getBackground(PAIR_SUM(np, originalPosition)) != nb) {
 		swapRegions();
 	}
-	activeRegion->setForeground(originalPosition, underForeground);
+	activeRegion->setForeground(player->getPosition(), underForeground);
+	Point newposition = player->movePosition(direction);
 	underForeground = activeRegion->getForeground(newposition);
 	activeRegion->setForeground(newposition, Foreground::Witch);
 	manageAltRegion();
@@ -196,12 +196,15 @@ void Engine::manageAltRegion() {
 		altRegionLoaded = false;
 		alternateRegion = NULL;
 	}
+//	printf("AR = %ld\n", (long int)alternateRegion);
 }
 
 void Engine::swapRegions() {
 	manageAltRegion();
-	if (!altRegionLoaded)
+	if (!altRegionLoaded) {
+//		printf("AR not loaded. AR = %ld\n", (long int)alternateRegion);
 		return;
+	}
 //	printf("Swapping\n");
 	Point startPosition = player->getPosition();
 	activeRegion->setForeground(startPosition, underForeground);
@@ -214,6 +217,7 @@ void Engine::swapRegions() {
 	altDisplacement = nad;
 	underForeground = activeRegion->getForeground(npos);
 	activeRegion->setForeground(npos, Foreground::Witch);
+//	printf("{%d, %d}; {%d, %d}; {%d, %d}\n", activeRegion->position.first, activeRegion->position.second, alternateRegion->position.first, alternateRegion->position.second, player->getRegion()->position.first, player->getRegion()->position.second);
 }
 
 std::queue<Direction> * Engine::astar(Point start, Point finish, Point relativeTo) {
