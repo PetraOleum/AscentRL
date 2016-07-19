@@ -9,3 +9,7 @@ Creature::Creature(Point position, Region * region, CreatureType type) {
 Creature::~Creature() {
 
 }
+
+Foreground getCreaturePointerForeground(Creature* creature) {
+	return getCreatureForeground(creature->getType());
+}

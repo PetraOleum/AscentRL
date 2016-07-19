@@ -6,6 +6,7 @@
 #include <map>
 
 using Point = std::pair<int, int>;
+class Creature;
 
 /// @brief Absolute value
 ///
@@ -37,6 +38,20 @@ enum class Foreground : uint8_t {
 	Staff,
 	Chest,
 	TOTAL
+};
+
+/// @brief Type of creature
+enum class CreatureType : uint8_t {
+	NONE,
+	Witch,
+	Rat
+};
+
+enum class ItemType : uint8_t {
+	NONE,
+	Gold,
+	Staff,
+	Chest
 };
 
 /// @brief Properties of a background
@@ -130,5 +145,57 @@ const std::map<Direction, Point> displacementMap = {
 #define PAIR_SUBTRACT(A, B) (std::make_pair(A.first - B.first, A.second - B.second))
 
 #define PAIR_MULTIPLY(A, B) (std::make_pair(A.first * B.first, A.second * B.second))
+
+
+/// @brief Map creature types to Foregrounds
+const std::map<CreatureType, Foreground> creatureForegrounds = {
+	{CreatureType::NONE, Foreground::NONE},
+	{CreatureType::Witch, Foreground::Witch},
+};
+
+/// @brief Get the foreground corresponding to the creature
+///
+/// @param creature The creature
+///
+/// @return The corresponding Foreground (Foreground::NONE if not defined)
+inline Foreground getCreatureForeground(CreatureType creature) {
+	auto it = creatureForegrounds.find(creature);
+	if (it == creatureForegrounds.end())
+		return Foreground::NONE;
+	return it->second;
+}
+
+Foreground getCreaturePointerForeground(Creature * creature);
+
+/// @brief Map foregrounds back to creature type
+const std::map<Foreground, CreatureType> foregroundCreatures = {
+	{Foreground::Witch, CreatureType::Witch}
+};
+
+/// @brief Get the creature corresponding to the foreground
+///
+/// @param foreground The foreground
+///
+/// @return The corresponding CreatureType (CreatureType::NONE if not defined)
+inline CreatureType getForegroundCreature(Foreground foreground) {
+	auto it = foregroundCreatures.find(foreground);
+	if (it == foregroundCreatures.end())
+		return CreatureType::NONE;
+	return it->second;
+}
+
+const std::map<ItemType, Foreground> itemForegrounds = {
+	{ItemType::Gold, Foreground::Gold},
+	{ItemType::Staff, Foreground::Staff},
+	{ItemType::Chest, Foreground::Chest},
+	{ItemType::NONE, Foreground::NONE}
+};
+
+inline Foreground getItemForeground(ItemType type) {
+	auto it = itemForegrounds.find(type);
+	if (it == itemForegrounds.end())
+		return Foreground::NONE;
+	return it->second;
+}
 
 #endif

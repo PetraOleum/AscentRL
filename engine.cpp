@@ -15,7 +15,7 @@ Engine::Engine() {
 	Region * StartRegion = new Region(10, 10, RoomType::Room);
 	player = new Creature({0, 0}, StartRegion, CreatureType::Witch);
 	StartRegion->position = { 0, 0 };
-	StartRegion->setForeground(player->getPosition(), Foreground::Witch);
+	StartRegion->putCreature( player->getPosition(), player);
 	regions.push_back(StartRegion);
 	refreshFOV();
 
@@ -65,17 +65,26 @@ bool Engine::Move(Direction direction) {
 	manageAltRegion(playerRegion, player->getPosition()); //Make sure valid
 	Point np = DISPLACEMENT(direction);
 	Point originalPosition = player->getPosition();
-	Background nb = relBaF(np, originalPosition, playerRegion).first;
-	if (!bkgrProps.at(nb).passible)
+	auto nbaf = relBaF(np, originalPosition, playerRegion);
+	Background nb = nbaf.first;
+	if (!bkgrProps.at(nb).passible && getForegroundCreature(nbaf.second) == CreatureType::NONE)
 		return false;
+//	Connection chere = playerRegion->connectionAt(originalPosition);
+//	printf("%ld, {%d, %d}\n", (long int)chere.to, chere.toLocation.first, chere.toLocation.second);
+//	if (chere.to != NULL)
+//		if (/* chere.to->hasCreature(chere.toLocation) || */ chere.to->hasCreature(PAIR_SUM(chere.toLocation, np)))
+//			return false;
 	if (playerRegion->getBackground(PAIR_SUM(np, originalPosition)) != nb) {
 		swapRegions(player);
 	}
 	playerRegion = player->getRegion();
-	playerRegion->setForeground(player->getPosition(), underForeground);
+	playerRegion->putCreature(player->getPosition(), NULL);
+//	playerRegion->setForeground(player->getPosition(), underForeground);
+	
 	Point newposition = player->movePosition(direction);
-	underForeground = playerRegion->getForeground(newposition);
-	playerRegion->setForeground(newposition, Foreground::Witch);
+//	underForeground = playerRegion->getForeground(newposition);
+//	playerRegion->setForeground(newposition, Foreground::Witch);
+	playerRegion->putCreature(newposition, player);
 	manageAltRegion(playerRegion, player->getPosition());
 	refreshFOV();
 
@@ -211,11 +220,13 @@ void Engine::swapRegions(Creature * creature) {
 	}
 	Point startPosition = creature->getPosition();
 	Region * playerStartRegion = creature->getRegion();
-	playerStartRegion->setForeground(startPosition, underForeground);
+	playerStartRegion->putCreature(startPosition, NULL);
+//	playerStartRegion->setForeground(startPosition, underForeground);
 	Point npos = creature->switchRegion(ccon.to, PAIR_SUBTRACT(ccon.toLocation, creature->getPosition()));
 	Region * newCreatureRegion = creature->getRegion();
-	underForeground = newCreatureRegion->getForeground(npos);
-	newCreatureRegion->setForeground(npos, Foreground::Witch);
+//	underForeground = newCreatureRegion->getForeground(npos);
+//	newCreatureRegion->setForeground(npos, Foreground::Witch);
+	newCreatureRegion->putCreature(npos, player);
 }
 
 std::queue<Direction> * Engine::astar(Point start, Point finish, Point relativeTo, Region * region) {

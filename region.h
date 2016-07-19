@@ -4,6 +4,7 @@
 #include <utility>
 #include <map>
 #include <vector>
+#include <deque>
 #include "general.h"
 
 #define GOLD_PROB 0.075
@@ -11,6 +12,7 @@
 #define CHEST_PROB 0.05
 
 class Region;
+
 
 
 
@@ -34,11 +36,16 @@ enum class RoomType : uint8_t {
 class Region {
 	private:
 
-		/// @brief Foregrounds
-		std::map<Point, Background> points;
+		/// @brief Creatures
+		std::map<Point, Creature *> creatures;
+
+		std::map<Point, std::deque<ItemType>> items;
 
 		/// @brief Backgrounds
-		std::map<Point, Foreground> foreground;
+		std::map<Point, Background> points;
+
+		/// @brief Foregrounds
+//		std::map<Point, Foreground> foreground;
 
 		/// @brief Connections
 		std::map<Point, Connection> connections;
@@ -105,19 +112,90 @@ class Region {
 		///
 		/// @return Foreground::NONE if nothing in map, otherwise contents of map
 		inline Foreground getForeground(Point location) {
-			auto it = foreground.find(location);
-			if (it == foreground.end())
-				return Foreground::NONE;
-			else
-				return it->second;
+//			auto it = foreground.find(location);
+//			if (it == foreground.end())
+//				return Foreground::NONE;
+//			else
+//				return it->second;
+			auto it = creatures.find(location);
+			if (it != creatures.end() && it->second != NULL)
+				return getCreaturePointerForeground(it->second);
+			else {
+				auto it = items.find(location);
+				if (it == items.end())
+					return Foreground::NONE;
+				else if (it->second.empty())
+					return Foreground::NONE;
+				else
+					return getItemForeground(it->second[0]);
+			}
 		}
 
-		/// @brief Set the foreground
+		/// @brief Place an item on the bottom of the queue at a particiular location
 		///
-		/// @param location A location to set at
-		/// @param fore Value to set to
-		inline void setForeground(Point location, Foreground fore) {
-			foreground[location] = fore;
+		/// @param location The location
+		/// @param item The item
+		inline void placeItem(Point location, ItemType item) {
+			items[location].push_back(item);
+		}
+
+		/// @brief Take an item from the top of the queue at a particular location
+		///
+		/// @param location The location
+		///
+		/// @return The item
+		inline ItemType takeItem(Point location) {
+			if (items[location].empty())
+				return ItemType::NONE;
+			else {
+				ItemType item = items[location][0];
+				items[location].pop_front();
+				return item;
+			}
+		}
+
+		/// @brief View the item at the top of the queue at a particular location
+		///
+		/// @param location The location
+		///
+		/// @return The item
+		inline ItemType topItem(Point location) {
+			if (items[location].empty())
+				return ItemType::NONE;
+			else {
+				ItemType item = items[location][0];
+				return item;
+			}
+		}
+		
+		/// @brief Get the creature at a location
+		///
+		/// @param location The location
+		///
+		/// @return Pointer to the creature
+		inline Creature * getCreature(Point location) {
+			auto it = creatures.find(location);
+			if (it == creatures.end())
+				return it->second;
+			else
+				return NULL;
+		}
+
+		/// @brief Whether or not there is a creature at that location
+		///
+		/// @param location The location
+		///
+		/// @return True if there is one there, i.e. is not null
+		inline bool hasCreature(Point location) {
+			return (getCreature(location) != NULL);
+		}
+
+		/// @brief Place (overwrite) the creature at a location
+		///
+		/// @param location The location
+		/// @param creature The creature
+		inline void putCreature(Point location, Creature * creature) {
+			creatures[location] = creature;
 		}
 
 		/// @brief Connect this region to another (need to run on other, if mutual)

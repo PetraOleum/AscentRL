@@ -5,47 +5,6 @@
 #include "region.h"
 #include <map>
 
-/// @brief Type of creature
-enum class CreatureType : uint8_t {
-	NONE,
-	Witch,
-	Rat
-};
-
-/// @brief Map creature types to Foregrounds
-const std::map<CreatureType, Foreground> creatureForegrounds = {
-	{CreatureType::NONE, Foreground::NONE},
-	{CreatureType::Witch, Foreground::Witch},
-};
-
-/// @brief Get the foreground corresponding to the creature
-///
-/// @param creature The creature
-///
-/// @return The corresponding Foreground (Foreground::NONE if not defined)
-inline Foreground getCreatureForeground(CreatureType creature) {
-	auto it = creatureForegrounds.find(creature);
-	if (it == creatureForegrounds.end())
-		return Foreground::NONE;
-	return it->second;
-}
-
-/// @brief Map foregrounds back to creature type
-const std::map<Foreground, CreatureType> foregroundCreatures = {
-	{Foreground::Witch, CreatureType::Witch}
-};
-
-/// @brief Get the creature corresponding to the foreground
-///
-/// @param foreground The foreground
-///
-/// @return The corresponding CreatureType (CreatureType::NONE if not defined)
-inline CreatureType getForegroundCreature(Foreground foreground) {
-	auto it = foregroundCreatures.find(foreground);
-	if (it == foregroundCreatures.end())
-		return CreatureType::NONE;
-	return it->second;
-}
 
 /// @brief Class that holds a creature; use as defined by new
 class Creature {
@@ -126,5 +85,6 @@ class Creature {
 		}
 
 };
+
 
 #endif

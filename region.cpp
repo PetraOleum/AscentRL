@@ -26,11 +26,11 @@ Region::Region(int w, int h, RoomType type) {
 					Point tp = Point(x, y);
 					points[tp] = Background::TiledFloor;
 					if (probdist(gen) < GOLD_PROB)
-						foreground[tp] = Foreground::Gold;
+						placeItem(tp, ItemType::Gold);
 					if (probdist(gen) < STAFF_PROB)
-						foreground[tp] = Foreground::Staff;
+						placeItem(tp, ItemType::Staff);
 					if (probdist(gen) < CHEST_PROB)
-						foreground[tp] = Foreground::Chest;
+						placeItem(tp, ItemType::Chest);
 				}
 				points[Point(x, -1)] = Background::StoneWall;
 				points[Point(x, h)] = Background::StoneWall;

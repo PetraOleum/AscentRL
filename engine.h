@@ -63,7 +63,7 @@ class Engine {
 		void swapRegions(Creature * creature);
 
 		/// @brief Temp variable for the foreground of the square you're in
-		Foreground underForeground = Foreground::NONE;
+//		Foreground underForeground = Foreground::NONE;
 
 		/// @brief Map of visible squares, accessed indirectly by the app
 		std::map<Point, Visibility>* visiblelocations = NULL;
@@ -147,8 +147,8 @@ class Engine {
 		/// @brief Expose underForeground
 		///
 		/// @return Reference to underForeground
-		inline const Foreground & underWitch() {
-			return underForeground;
+		inline Foreground underWitch() {
+			return getItemForeground(player->getRegion()->topItem(player->getPosition()));
 		}
 
 };
