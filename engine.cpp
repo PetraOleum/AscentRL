@@ -127,14 +127,14 @@ void Engine::manageAltRegion() {
 		Connection tc = playerRegion->connectionAt(player->getPosition());
 //		printf("manageAltRegion(), 0x%lx\n", (long int)tc.to);
 		if (tc.to != NULL) {
-			alternateRegion = tc.to;
-			altDisplacement = PAIR_SUBTRACT(
-					tc.toLocation,
-					player->getPosition()
-					);
+			Region * alternateRegion = tc.to;
+//			altDisplacement = PAIR_SUBTRACT(
+//					tc.toLocation,
+//					player->getPosition()
+//					);
 			if (alternateRegion->getBackground(tc.toLocation) == Background::Door)
 				alternateRegion->markDoor(tc.toLocation);
-			altRegionLoaded = true;
+//			altRegionLoaded = true;
 		} else {
 			RoomType nrt = (playerRegion->Type() == RoomType::Room)
 				? RoomType::Corridor : RoomType::Room;
@@ -160,24 +160,24 @@ void Engine::manageAltRegion() {
 			}
 			
 			if (!freept.second) {
-				altRegionLoaded = false;
-				alternateRegion = NULL;
+//				altRegionLoaded = false;
+//				alternateRegion = NULL;
 				if (!foundfree)
 					delete nr;
 				return;
 			}
 			if (!playerRegion->connectTo(nr, tc.direction, player->getPosition(), freept.first)) {
 				fprintf(stderr, "This should not have happened: error connecting activeRegion to nr\n");
-				altRegionLoaded = false;
-				alternateRegion = NULL;
+//				altRegionLoaded = false;
+//				alternateRegion = NULL;
 				if (!foundfree)
 					delete nr;
 				return;
 			}
 			if (!nr->connectTo(playerRegion, oppositeDirection(tc.direction), freept.first, player->getPosition())) {
 				fprintf(stderr, "This should not have happened: error connecting nr to activeRegion (note: corrupted activeRegion)\n");
-				altRegionLoaded = false;
-				alternateRegion = NULL;
+//				altRegionLoaded = false;
+//				alternateRegion = NULL;
 				if (!foundfree)
 					delete nr;
 				return;
@@ -185,40 +185,41 @@ void Engine::manageAltRegion() {
 //			printf("Attached\n");
 			if (!foundfree)
 				regions.push_back(nr);
-			alternateRegion = nr;
-			altDisplacement = PAIR_SUBTRACT(
-					freept.first,
-					player->getPosition()
-					);
+			Region * alternateRegion = nr;
+//			altDisplacement = PAIR_SUBTRACT(
+//					freept.first,
+//					player->getPosition()
+//					);
 			if (alternateRegion->getBackground(freept.first) == Background::Door)
 				alternateRegion->markDoor(freept.first);
-			altRegionLoaded = true;
+//			altRegionLoaded = true;
 //			printf("{%d, %d}, {%d, %d}, {%d, %d}\n", altDisplacement.first, altDisplacement.second, currentPosition.first, currentPosition.second, freept.first.first, freept.first.second);
 		}
 	} else {
-		altRegionLoaded = false;
-		alternateRegion = NULL;
+//		altRegionLoaded = false;
+//		alternateRegion = NULL;
 	}
 //	printf("AR = %ld\n", (long int)alternateRegion);
 }
 
 void Engine::swapRegions() {
 	manageAltRegion();
-	if (!altRegionLoaded) {
-//		printf("AR not loaded. AR = %ld\n", (long int)alternateRegion);
+	Connection ccon = player->getRegion()->connectionAt(player->getPosition());
+	if (ccon.to == NULL) {
+		fprintf(stderr, "AR not loaded.");
 		return;
 	}
 //	printf("Swapping\n");
 	Point startPosition = player->getPosition();
 	Region * playerStartRegion = player->getRegion();
 	playerStartRegion->setForeground(startPosition, underForeground);
-	Point npos = player->switchRegion(alternateRegion, altDisplacement);
-	Point nad = PAIR_SUBTRACT(Point(0,0), altDisplacement);
+	Point npos = player->switchRegion(ccon.to, PAIR_SUBTRACT(ccon.toLocation, player->getPosition()));
+//	Point nad = PAIR_SUBTRACT(Point(0,0), altDisplacement);
 //	Region * tmp = activeRegion;
 //	activeRegion = alternateRegion;
-	alternateRegion = playerStartRegion;
+//	alternateRegion = playerStartRegion;
 //	currentPosition = npos;
-	altDisplacement = nad;
+//	altDisplacement = nad;
 	Region * newPlayerRegion = player->getRegion();
 	underForeground = newPlayerRegion->getForeground(npos);
 	newPlayerRegion->setForeground(npos, Foreground::Witch);
