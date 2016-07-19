@@ -52,10 +52,15 @@ class Engine {
 		std::vector<Region*> regions;
 
 		/// @brief Manage the alternate region
-		void manageAltRegion();
+		///
+		/// @param curregion The current region
+		/// @param position The current position
+		void manageAltRegion(Region * curregion, const Point& position);
 
 		/// @brief Swap the alternate and active regions
-		void swapRegions();
+		///
+		/// @param creature The creature whose region is being swapped
+		void swapRegions(Creature * creature);
 
 		/// @brief Temp variable for the foreground of the square you're in
 		Foreground underForeground = Foreground::NONE;
