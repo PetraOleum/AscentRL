@@ -37,6 +37,7 @@ enum class Foreground : uint8_t {
 	Gold,
 	Staff,
 	Chest,
+	Rat,
 	TOTAL
 };
 
@@ -81,6 +82,7 @@ const std::map<Foreground, ForegroundProperties> foreProps = {
 	{Foreground::Gold, {"Gold"}},
 	{Foreground::Staff, {"Staff"}},
 	{Foreground::Chest, {"Chest"}},
+	{Foreground::Rat, {"Rat"}},
 	{Foreground::TOTAL, {"\"Total\" element"}}
 };
 
@@ -151,6 +153,7 @@ const std::map<Direction, Point> displacementMap = {
 const std::map<CreatureType, Foreground> creatureForegrounds = {
 	{CreatureType::NONE, Foreground::NONE},
 	{CreatureType::Witch, Foreground::Witch},
+	{CreatureType::Rat, Foreground::Rat}
 };
 
 /// @brief Get the foreground corresponding to the creature
@@ -169,7 +172,8 @@ Foreground getCreaturePointerForeground(Creature * creature);
 
 /// @brief Map foregrounds back to creature type
 const std::map<Foreground, CreatureType> foregroundCreatures = {
-	{Foreground::Witch, CreatureType::Witch}
+	{Foreground::Witch, CreatureType::Witch},
+	{Foreground::Rat, CreatureType::Rat}
 };
 
 /// @brief Get the creature corresponding to the foreground

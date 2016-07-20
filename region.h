@@ -5,11 +5,13 @@
 #include <map>
 #include <vector>
 #include <deque>
+#include <string>
 #include "general.h"
 
 #define GOLD_PROB 0.075
 #define STAFF_PROB 0.003
 #define CHEST_PROB 0.05
+
 
 class Region;
 
@@ -245,6 +247,13 @@ class Region {
 		inline const RoomType & Type() {
 			return type;
 		}
+
+		/// @brief Get a "here" string for all the items at a location
+		///
+		/// @param location The location
+		///
+		/// @return The string produced
+		std::string itemHereString(Point location);
 
 };
 

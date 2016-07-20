@@ -48,6 +48,8 @@ class Engine {
 		/// @brief The player creature
 		Creature* player = NULL;
 
+		std::vector<Creature*> creatures;
+
 		/// @brief Vector to hold all regions, to allow deletion
 		std::vector<Region*> regions;
 
@@ -149,6 +151,10 @@ class Engine {
 		/// @return Reference to underForeground
 		inline Foreground underWitch() {
 			return getItemForeground(player->getRegion()->topItem(player->getPosition()));
+		}
+
+		inline std::string underItemString() {
+			return player->getRegion()->itemHereString(player->getPosition());
 		}
 
 };

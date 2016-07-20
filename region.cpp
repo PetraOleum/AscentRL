@@ -180,3 +180,22 @@ bool Region::addrandomemptyconnection(Direction direction, Point location) {
 	connections[location] = nConnection;
 	return true;
 }
+
+std::string Region::itemHereString(Point location) {
+	if (items[location].empty())
+		return "Here: Nothing.";
+	std::string str = "Here: ";
+
+	bool nfirst = false;
+	for (auto item : items[location]) {
+		if (nfirst)
+			str += ", ";
+		nfirst = true;
+		str += foreProps.at(getItemForeground(item)).name;
+	}
+
+	str += ".";
+
+
+	return str;
+}

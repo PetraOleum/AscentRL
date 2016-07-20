@@ -14,6 +14,9 @@ Engine::Engine() {
 	
 	Region * StartRegion = new Region(10, 10, RoomType::Room);
 	player = new Creature({0, 0}, StartRegion, CreatureType::Witch);
+	Creature * rat = new Creature({1, 1}, StartRegion, CreatureType::Rat);
+	StartRegion->putCreature(rat->getPosition(), rat);
+	creatures.push_back(rat);
 	StartRegion->position = { 0, 0 };
 	StartRegion->putCreature( player->getPosition(), player);
 	regions.push_back(StartRegion);
@@ -24,6 +27,9 @@ Engine::Engine() {
 Engine::~Engine() {
 	for (Region* region : regions) {
 		delete region;
+	}
+	for (Creature* creature : creatures) {
+		delete creature;
 	}
 	delete player;
 }
@@ -67,7 +73,7 @@ bool Engine::Move(Direction direction) {
 	Point originalPosition = player->getPosition();
 	auto nbaf = relBaF(np, originalPosition, playerRegion);
 	Background nb = nbaf.first;
-	if (!bkgrProps.at(nb).passible && getForegroundCreature(nbaf.second) == CreatureType::NONE)
+	if (!bkgrProps.at(nb).passible || getForegroundCreature(nbaf.second) != CreatureType::NONE)
 		return false;
 //	Connection chere = playerRegion->connectionAt(originalPosition);
 //	printf("%ld, {%d, %d}\n", (long int)chere.to, chere.toLocation.first, chere.toLocation.second);

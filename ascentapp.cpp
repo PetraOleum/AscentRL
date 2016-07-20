@@ -305,9 +305,9 @@ void AscentApp::drawStatusBox() {
 	Foreground tb = engine->underWitch();
 	if (tb != Foreground::NONE) {
 //		printf("Here: %s\n", foreProps.at(tb).name);
-		const char * msg = foreProps.at(tb).name;
-		std::string msgstring = "Here: ";
-		msgstring += msg;
+//		const char * msg = foreProps.at(tb).name;
+		std::string msgstring = engine->underItemString();
+//		msgstring += msg;
 		SDL_Surface* textSurface = TTF_RenderText_Blended(font, msgstring.c_str(), {0xFF, 0xFF, 0xFF, 0xFF});
 		if (textSurface == NULL) {
 			fprintf(stderr, "Couldn\'t make the text surface. %s\n", TTF_GetError());
