@@ -211,6 +211,10 @@ void AscentApp::onKeyDown(SDL_KeyboardEvent * keyEvent) {
 		case SDLK_KP_3:
 			plan.push(Direction::DownRight);
 			break;
+		case SDLK_KP_5:
+		case SDLK_PERIOD:
+			engine->doMonsterTurns();
+			break;
 		default:
 			break;
 	}

@@ -95,7 +95,8 @@ enum class Direction : uint8_t {
 	UpRight,
 	DownRight,
 	DownLeft,
-	UpLeft
+	UpLeft,
+	NONE
 };
 
 /// @brief Get the "oppisite" direction to the one provided
@@ -122,7 +123,7 @@ inline Direction oppositeDirection(Direction direction) {
 		case Direction::UpLeft:
 			return Direction::DownRight;
 		default:
-			return Direction::Up;
+			return Direction::NONE;
 	}
 }
 
@@ -135,7 +136,8 @@ const std::map<Direction, Point> displacementMap = {
 	{Direction::UpLeft, {-1, -1}},
 	{Direction::UpRight, {1, -1}},
 	{Direction::DownRight, {1, 1}},
-	{Direction::DownLeft, {-1, 1}}
+	{Direction::DownLeft, {-1, 1}},
+	{Direction::NONE, {0,0}}
 };
 
 /// @brief Macro to get displacement
@@ -201,5 +203,15 @@ inline Foreground getItemForeground(ItemType type) {
 		return Foreground::NONE;
 	return it->second;
 }
+
+/// @brief Hold the Visibility information + foreground/background of a square
+struct Visibility {
+	/// @brief Whether the square is visible
+	bool visible;
+	/// @brief Value of the background
+	Background background;
+	/// @brief Value of the foreground
+	Foreground foreground;
+};
 
 #endif

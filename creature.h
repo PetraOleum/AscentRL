@@ -4,6 +4,7 @@
 #include "general.h"
 #include "region.h"
 #include <map>
+#include <queue>
 
 
 /// @brief Class that holds a creature; use as defined by new
@@ -15,6 +16,17 @@ class Creature {
 		Region * region;
 		/// @brief The type of creature that the creature is
 		CreatureType type;
+
+		/// @brief The visibility map
+		std::map<Point, Visibility> * cvismap = NULL;
+		
+		/// @brief The plan of moves
+		std::queue<Direction> * plan = new std::queue<Direction>;
+
+		/// @brief Find the target to move to
+		///
+		/// @return Location of the witch
+		Point findTarget();
 
 	public:
 		/// @brief Constructor, specifying starting position, region, type
@@ -82,6 +94,28 @@ class Creature {
 		/// @return The foreground
 		inline Foreground Sprite() const {
 			return getCreatureForeground(type);
+		}
+
+		/// @brief Propose an action
+		///
+		/// @return The direction
+		Direction propose_action();
+
+		/// @brief Astar for the creature
+		///
+		/// @param start The Start location
+		/// @param finish The end location
+		///
+		/// @return The plan
+		std::queue<Direction> * astar(Point start, Point finish);
+
+		/// @brief Update the field of view
+		///
+		/// @param fovmap The map (do be deleted when replaced)
+		inline void updateFOV(std::map<Point, Visibility> * fovmap) {
+			if (cvismap != NULL)
+				delete cvismap;
+			cvismap = fovmap;
 		}
 
 };

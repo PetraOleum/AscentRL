@@ -23,16 +23,6 @@
 /// @brief Background/foreground pair
 using BaF = std::pair<Background, Foreground>;
 
-/// @brief Hold the Visibility information + foreground/background of a square
-struct Visibility {
-	/// @brief Whether the square is visible
-	bool visible;
-	/// @brief Value of the background
-	Background background;
-	/// @brief Value of the foreground
-	Foreground foreground;
-};
-
 /// @brief Class for the game engine
 class Engine {
 	private:
@@ -48,6 +38,7 @@ class Engine {
 		/// @brief The player creature
 		Creature* player = NULL;
 
+		/// @brief Vector of the creatures
 		std::vector<Creature*> creatures;
 
 		/// @brief Vector to hold all regions, to allow deletion
@@ -63,9 +54,6 @@ class Engine {
 		///
 		/// @param creature The creature whose region is being swapped
 		void swapRegions(Creature * creature);
-
-		/// @brief Temp variable for the foreground of the square you're in
-//		Foreground underForeground = Foreground::NONE;
 
 		/// @brief Map of visible squares, accessed indirectly by the app
 		std::map<Point, Visibility>* visiblelocations = NULL;
@@ -143,7 +131,9 @@ class Engine {
 		///
 		/// @return Queue of directions
 		inline std::queue<Direction> * playerAstar(Point start, Point finish) {
-			return astar(start, finish, player->getPosition(), player->getRegion());
+			player->updateFOV(FOV(player->getPosition(), player->getRegion()));
+//			return astar(start, finish, player->getPosition(), player->getRegion());
+			return player->astar(start, finish);
 		}
 
 		/// @brief Expose underForeground
@@ -153,9 +143,23 @@ class Engine {
 			return getItemForeground(player->getRegion()->topItem(player->getPosition()));
 		}
 
+		/// @brief Get the string of the stuff under the player
+		///
+		/// @return The string
 		inline std::string underItemString() {
 			return player->getRegion()->itemHereString(player->getPosition());
 		}
+
+		/// @brief Do all the monster's turns
+		void doMonsterTurns();
+
+		/// @brief Move a specific monster
+		///
+		/// @param creature The creature
+		/// @param direction The direction
+		///
+		/// @return Success/fail
+		bool monsterMove(Creature * creature, Direction direction);
 
 };
 

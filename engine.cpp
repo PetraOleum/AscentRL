@@ -14,7 +14,7 @@ Engine::Engine() {
 	
 	Region * StartRegion = new Region(10, 10, RoomType::Room);
 	player = new Creature({0, 0}, StartRegion, CreatureType::Witch);
-	Creature * rat = new Creature({1, 1}, StartRegion, CreatureType::Rat);
+	Creature * rat = new Creature({5, 5}, StartRegion, CreatureType::Rat);
 	StartRegion->putCreature(rat->getPosition(), rat);
 	creatures.push_back(rat);
 	StartRegion->position = { 0, 0 };
@@ -67,32 +67,9 @@ Foreground Engine::getForeground(Point point) {
 }
 
 bool Engine::Move(Direction direction) {
-	Region * playerRegion = player->getRegion();
-	manageAltRegion(playerRegion, player->getPosition()); //Make sure valid
-	Point np = DISPLACEMENT(direction);
-	Point originalPosition = player->getPosition();
-	auto nbaf = relBaF(np, originalPosition, playerRegion);
-	Background nb = nbaf.first;
-	if (!bkgrProps.at(nb).passible || getForegroundCreature(nbaf.second) != CreatureType::NONE)
+	if (!monsterMove(player, direction))
 		return false;
-//	Connection chere = playerRegion->connectionAt(originalPosition);
-//	printf("%ld, {%d, %d}\n", (long int)chere.to, chere.toLocation.first, chere.toLocation.second);
-//	if (chere.to != NULL)
-//		if (/* chere.to->hasCreature(chere.toLocation) || */ chere.to->hasCreature(PAIR_SUM(chere.toLocation, np)))
-//			return false;
-	if (playerRegion->getBackground(PAIR_SUM(np, originalPosition)) != nb) {
-		swapRegions(player);
-	}
-	playerRegion = player->getRegion();
-	playerRegion->putCreature(player->getPosition(), NULL);
-//	playerRegion->setForeground(player->getPosition(), underForeground);
-	
-	Point newposition = player->movePosition(direction);
-//	underForeground = playerRegion->getForeground(newposition);
-//	playerRegion->setForeground(newposition, Foreground::Witch);
-	playerRegion->putCreature(newposition, player);
-	manageAltRegion(playerRegion, player->getPosition());
-	refreshFOV();
+	doMonsterTurns();
 
 	return true;
 }
@@ -323,4 +300,32 @@ std::queue<Direction> * Engine::astar(Point start, Point finish, Point relativeT
 	}
 
 	return directions;
+}
+
+void Engine::doMonsterTurns() {
+	for (auto monster : creatures) {
+		monster->updateFOV(FOV(monster->getPosition(), monster->getRegion()));
+		monsterMove(monster, monster->propose_action());
+	}
+	refreshFOV();
+}
+
+bool Engine::monsterMove(Creature * creature, Direction direction) {
+	Region * cRegion = creature->getRegion();
+	manageAltRegion(cRegion, creature->getPosition());
+	Point np = DISPLACEMENT(direction);
+	Point originalPosition = creature->getPosition();
+	auto nbaf = relBaF(np, originalPosition, cRegion);
+	Background nb = nbaf.first;
+	if (!bkgrProps.at(nb).passible || getForegroundCreature(nbaf.second) != CreatureType::NONE)
+		return false;
+	if (cRegion->getBackground(PAIR_SUM(np, originalPosition)) != nb)
+		swapRegions(creature);
+	cRegion = creature->getRegion();
+	cRegion->putCreature(creature->getPosition(), NULL);
+	Point newposition = creature->movePosition(direction);
+	cRegion->putCreature(newposition, creature);
+	manageAltRegion(cRegion, creature->getPosition());
+	return true;
+
 }
