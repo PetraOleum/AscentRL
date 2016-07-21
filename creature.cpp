@@ -20,9 +20,9 @@ Direction Creature::propose_action() {
 	assert(cvismap != NULL);
 
 	if (plan->empty()) {
-		Point goal = findTarget();
+		target = findTarget();
 		delete plan;
-		plan = astar({0,0}, goal);
+		plan = astar({0,0}, target);
 	}
 	if (!plan->empty()) {
 		Direction nd = plan->front();
@@ -124,5 +124,5 @@ Point Creature::findTarget() {
 	for (auto it : *cvismap)
 		if (it.second.visible && it.second.foreground == Foreground::Witch) 
 			return it.first;
-	return {0,0};
+	return target;
 }

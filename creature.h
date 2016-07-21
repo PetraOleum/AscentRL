@@ -28,6 +28,8 @@ class Creature {
 		/// @return Location of the witch
 		Point findTarget();
 
+		Point target = Point(0,0);
+
 	public:
 		/// @brief Constructor, specifying starting position, region, type
 		///
@@ -66,6 +68,7 @@ class Creature {
 		///
 		/// @return The new position
 		inline const Point& movePosition(const Point& displacement) {
+			target = PAIR_SUM(target, displacement);
 			return (position = PAIR_SUM(position, displacement));
 		}
 
@@ -86,6 +89,7 @@ class Creature {
 		/// @return The new position
 		inline const Point& switchRegion(Region * newRegion, const Point& delta) {
 			region = newRegion;
+			target = PAIR_SUM(target, delta);
 			return (position = PAIR_SUM(position, delta));
 		}
 
