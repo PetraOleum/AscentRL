@@ -201,9 +201,9 @@ void Engine::swapRegions(Creature * creature) {
 		fprintf(stderr, "AR not loaded.");
 		return;
 	}
-	Point startPosition = creature->getPosition();
-	Region * playerStartRegion = creature->getRegion();
-	playerStartRegion->putCreature(startPosition, NULL);
+//	Point startPosition = creature->getPosition();
+//	Region * playerStartRegion = creature->getRegion();
+//	playerStartRegion->putCreature(startPosition, NULL);
 //	playerStartRegion->setForeground(startPosition, underForeground);
 	Point npos = creature->switchRegion(ccon.to, PAIR_SUBTRACT(ccon.toLocation, creature->getPosition()));
 	Region * newCreatureRegion = creature->getRegion();
@@ -323,9 +323,15 @@ bool Engine::monsterMove(Creature * creature, Direction direction) {
 		swapRegions(creature);
 	cRegion = creature->getRegion();
 	cRegion->putCreature(creature->getPosition(), NULL);
+	Connection potentialConnection = cRegion->connectionAt(creature->getPosition());
+	if (potentialConnection.to != NULL)
+		potentialConnection.to->putCreature(potentialConnection.toLocation, NULL);
 	Point newposition = creature->movePosition(direction);
 	cRegion->putCreature(newposition, creature);
 	manageAltRegion(cRegion, creature->getPosition());
+	potentialConnection = cRegion->connectionAt(newposition);
+	if (potentialConnection.to != NULL)
+		potentialConnection.to->putCreature(potentialConnection.toLocation, creature);
 	return true;
 
 }

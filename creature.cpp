@@ -19,11 +19,9 @@ Creature::~Creature() {
 Direction Creature::propose_action() {
 	assert(cvismap != NULL);
 
-	if (plan->empty()) {
-		target = findTarget();
-		delete plan;
-		plan = astar({0,0}, target);
-	}
+	target = findTarget();
+	delete plan;
+	plan = astar({0,0}, target);
 	if (!plan->empty()) {
 		Direction nd = plan->front();
 		plan->pop();
