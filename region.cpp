@@ -214,11 +214,11 @@ std::string Region::ToString(bool showItems) const {
 	ts << (long int)this;
 	ts << std::dec;
 	ts << "\n";
-//	ts << "Type: " << (uint8_t)this->type << "\n";
+	ts << "Posiiton: " << this->position.first << ", " << this->position.second << "\n";
 	ts << "Creatures:\n";
 	for (auto it : this->creatures) {
 		if (it.second != NULL) {
-			ts << "\tAt " << it.first.first << ", " << it.first.second << "\t";
+			ts << "\tAt " << it.first.first << ", " << it.first.second << ":  ";
 			ts << std::hex;
 			ts << (long int)it.second;
 			ts << std::dec;
@@ -231,7 +231,7 @@ std::string Region::ToString(bool showItems) const {
 		ts << "Items:\n";
 		for (auto it : this->items) {
 			if (!it.second.empty()) {
-				ts << "\tAt " << it.first.first << ", " << it.first.second << ";\t";
+				ts << "\t(" << it.first.first << ", " << it.first.second << ")  ";
 				ts << this->itemHereString(it.first) << "\n";
 			}
 		}
