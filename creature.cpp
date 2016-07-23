@@ -122,10 +122,12 @@ std::queue<Direction> * Creature::astar(Point start, Point finish) {
 Point Creature::findTarget() {
 	if (cvismap == NULL)
 		return {0,0};
+	Point tt = target;
 	for (auto it : *cvismap)
-		if (it.second.visible && it.second.foreground == Foreground::Witch) 
-			return it.first;
-	return target;
+		if (it.second.visible && it.second.foreground == Foreground::Witch) {
+			tt = it.first;
+		}
+	return tt;
 //	return {0,0};
 }
 

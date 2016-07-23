@@ -68,7 +68,7 @@ class Creature {
 		///
 		/// @return The new position
 		inline const Point& movePosition(const Point& displacement) {
-			target = PAIR_SUM(target, displacement);
+			target = PAIR_SUBTRACT(target, displacement);
 			return (position = PAIR_SUM(position, displacement));
 		}
 

@@ -108,7 +108,6 @@ void Engine::refreshFOV() {
 	if (visiblelocations != NULL)
 		delete visiblelocations;
 	visiblelocations = FOV(player->getPosition(), player->getRegion());
-
 }
 
 void Engine::manageAltRegion(Region * curregion, const Point& position) {
@@ -308,7 +307,7 @@ void Engine::doMonsterTurns() {
 		monsterMove(monster, monster->propose_action());
 	}
 	refreshFOV();
-	ReportState();
+//	ReportState();
 }
 
 bool Engine::monsterMove(Creature * creature, Direction direction) {
@@ -338,9 +337,9 @@ bool Engine::monsterMove(Creature * creature, Direction direction) {
 }
 
 void Engine::ReportState() {
-	for (Region * region : regions)
-		printf("Region:\n%s\n", region->ToString(false).c_str());
-	printf("Player:\n%s\n", player->ToString().c_str());
+//	for (Region * region : regions)
+//		printf("Region:\n%s\n", region->ToString(false).c_str());
+//	printf("Player:\n%s\n", player->ToString().c_str());
 	for (Creature * cr : creatures)
 		printf("Creature:\n%s\n", cr->ToString().c_str());
 }
