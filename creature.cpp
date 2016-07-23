@@ -126,7 +126,9 @@ Point Creature::findTarget() {
 		if (it.second.visible && it.second.foreground == Foreground::Witch) 
 			return it.first;
 	return target;
+//	return {0,0};
 }
+
 
 std::string Creature::ToString() const {
 	std::stringstream ts;
