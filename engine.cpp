@@ -308,6 +308,7 @@ void Engine::doMonsterTurns() {
 		monsterMove(monster, monster->propose_action());
 	}
 	refreshFOV();
+	ReportState();
 }
 
 bool Engine::monsterMove(Creature * creature, Direction direction) {
@@ -334,4 +335,12 @@ bool Engine::monsterMove(Creature * creature, Direction direction) {
 		potentialConnection.to->putCreature(potentialConnection.toLocation, creature);
 	return true;
 
+}
+
+void Engine::ReportState() {
+	printf("Player:\n%s\n", player->ToString().c_str());
+	for (Creature * cr : creatures)
+		printf("Creature:\n%s\n", cr->ToString().c_str());
+	for (Region * region : regions)
+		printf("Region:\n%s\n", region->ToString(false).c_str());
 }

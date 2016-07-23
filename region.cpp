@@ -1,5 +1,8 @@
 #include "region.h"
 #include <random>
+#include <sstream>
+#include <iostream>
+#include <iomanip>
 
 /// @brief A static random number generator, for the region
 std::mt19937 gen;
@@ -181,13 +184,16 @@ bool Region::addrandomemptyconnection(Direction direction, Point location) {
 	return true;
 }
 
-std::string Region::itemHereString(Point location) {
-	if (items[location].empty())
+std::string Region::itemHereString(Point location) const {
+	auto it = items.find(location);
+	if (it == items.end())
+		return "Here: Nothing.";
+	if (it->second.empty())
 		return "Here: Nothing.";
 	std::string str = "Here: ";
 
 	bool nfirst = false;
-	for (auto item : items[location]) {
+	for (auto item : it->second) {
 		if (nfirst)
 			str += ", ";
 		nfirst = true;
@@ -198,4 +204,38 @@ std::string Region::itemHereString(Point location) {
 
 
 	return str;
+}
+
+std::string Region::ToString(bool showItems) const {
+	std::stringstream ts;
+	ts << "this: \t";
+	ts << std::hex;
+	ts << std::showbase << std::internal << std::setfill('0') << std::setw(16);
+	ts << (long int)this;
+	ts << std::dec;
+	ts << "\n";
+//	ts << "Type: " << (uint8_t)this->type << "\n";
+	ts << "Creatures:\n";
+	for (auto it : this->creatures) {
+		if (it.second != NULL) {
+			ts << "\tAt " << it.first.first << ", " << it.first.second << "\t";
+			ts << std::hex;
+			ts << (long int)it.second;
+			ts << std::dec;
+			ts << " (";
+			ts << foreProps.at(this->getForeground(it.first)).name;
+			ts << ")\n";
+		}
+	}
+	if (showItems) {
+		ts << "Items:\n";
+		for (auto it : this->items) {
+			if (!it.second.empty()) {
+				ts << "\tAt " << it.first.first << ", " << it.first.second << ";\t";
+				ts << this->itemHereString(it.first) << "\n";
+			}
+		}
+	}
+
+	return ts.str();
 }

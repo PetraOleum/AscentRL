@@ -161,6 +161,8 @@ class Engine {
 		/// @return Success/fail
 		bool monsterMove(Creature * creature, Direction direction);
 
+		void ReportState();
+
 };
 
 #endif

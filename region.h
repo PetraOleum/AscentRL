@@ -113,7 +113,7 @@ class Region {
 		/// @param location A location
 		///
 		/// @return Foreground::NONE if nothing in map, otherwise contents of map
-		inline Foreground getForeground(Point location) {
+		inline Foreground getForeground(Point location) const {
 //			auto it = foreground.find(location);
 //			if (it == foreground.end())
 //				return Foreground::NONE;
@@ -253,7 +253,12 @@ class Region {
 		/// @param location The location
 		///
 		/// @return The string produced
-		std::string itemHereString(Point location);
+		std::string itemHereString(Point location) const;
+
+		/// @brief Render the state of the region as a string
+		///
+		/// @return The string
+		std::string ToString(bool showItems = true) const;
 
 };
 

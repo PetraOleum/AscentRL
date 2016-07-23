@@ -122,6 +122,11 @@ class Creature {
 			cvismap = fovmap;
 		}
 
+		/// @brief Get the state of the creature as a string
+		///
+		/// @return State string
+		std::string ToString() const;
+
 };
 
 

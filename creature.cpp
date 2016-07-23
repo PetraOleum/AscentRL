@@ -1,6 +1,9 @@
 #include "creature.h"
 #include <stack>
 #include <cassert>
+#include <sstream>
+#include <iostream>
+#include <iomanip>
 
 Foreground getCreaturePointerForeground(Creature* creature) {
 	return getCreatureForeground(creature->getType());
@@ -123,4 +126,33 @@ Point Creature::findTarget() {
 		if (it.second.visible && it.second.foreground == Foreground::Witch) 
 			return it.first;
 	return target;
+}
+
+std::string Creature::ToString() const {
+	std::stringstream ts;
+	ts << "this: \t";
+	ts << std::hex;
+	ts << std::showbase << std::internal << std::setfill('0') << std::setw(16);
+	ts << (long int)this;
+	ts << std::dec;
+	ts << "\n";
+	ts << "Type: \t";
+	try {
+		ts << foreProps.at(this->Sprite()).name << "\n";
+	} catch (std::exception e) {
+		ts << (uint8_t)this->type << " (Could not get name: " << e.what() << ")\n";
+	}
+	ts << "Position: \t" << this->position.first << ", " << this->position.second << "\n";
+	ts << "Target: \t" << this->target.first << ", " << this->target.second << "\n";
+	if (this->plan != NULL)
+		if (!this->plan->empty())
+			ts << "Next: \t" << DISPLACEMENT(this->plan->front()).first << ", " << DISPLACEMENT(this->plan->front()).second << "\n";
+	ts << "Region: \t";
+	ts << std::hex;
+	ts << std::showbase << std::internal << std::setfill('0') << std::setw(16);
+	ts << (long int)this->region;
+	ts << std::dec;
+	ts << " (" << this->region->position.first << ", " << this->region->position.second << ")\n";
+
+	return ts.str();
 }

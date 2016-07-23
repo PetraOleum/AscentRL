@@ -4,6 +4,7 @@
 #include <cstdint>
 #include <utility>
 #include <map>
+#include <string>
 
 using Point = std::pair<int, int>;
 class Creature;
