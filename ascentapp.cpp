@@ -47,7 +47,6 @@ bool AscentApp::OnInit() {
 		fprintf(stderr, "Could not load font: %s\n", TTF_GetError());
 		return false;
 	}
-	screensurface = SDL_GetWindowSurface(window);
 	if ((renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED)) == NULL) {
 		fprintf(stderr, "Could not create renderer. SDL error: %s\n", SDL_GetError());
 		return false;
