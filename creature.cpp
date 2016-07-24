@@ -13,6 +13,10 @@ Creature::Creature(Point position, Region * region, CreatureType type) {
 	this->position = position;
 	this->region = region;
 	this->type = type;
+	this->properties = getCreatureProperties(type);
+	dweapon = std::uniform_int_distribution<int>(1, this->properties.attackDice);
+	std::random_device rd;
+	gen = std::mt19937(rd());
 }
 
 Creature::~Creature() {
@@ -151,6 +155,9 @@ std::string Creature::ToString() const {
 	if (this->plan != NULL)
 		if (!this->plan->empty())
 			ts << "Next: \t" << DISPLACEMENT(this->plan->front()).first << ", " << DISPLACEMENT(this->plan->front()).second << "\n";
+	ts << "HP: \t" << this->properties.HP << "\n";
+	ts << "AC: \t" << this->properties.AC << "\n";
+	ts << "Weapon: \t d" << this->properties.attackDice << " + " << this->properties.baseAttack << "\n";
 	ts << "Region: \t";
 	ts << std::hex;
 	ts << std::showbase << std::internal << std::setfill('0') << std::setw(16);
@@ -159,4 +166,11 @@ std::string Creature::ToString() const {
 	ts << " (" << this->region->position.first << ", " << this->region->position.second << ")\n";
 
 	return ts.str();
+}
+
+void Creature::kill() {
+	this->properties.HP = 0;
+	this->region = NULL;
+	this->position = {0,0};
+	this->target = {0,0};
 }

@@ -151,6 +151,9 @@ const std::map<Direction, Point> displacementMap = {
 
 #define PAIR_MULTIPLY(A, B) (std::make_pair(A.first * B.first, A.second * B.second))
 
+/// @brief Swap first and second parts of A
+#define PAIR_SWIVEL(A) (std::make_pair(A.second, A.first))
+
 
 /// @brief Properties of a creature type
 struct creatureProperties {
@@ -213,6 +216,11 @@ inline Foreground getCreatureForeground(CreatureType creature) {
 	return it->second.foreground;
 }
 
+/// @brief Get the default properties of the creature
+///
+/// @param creature The creature
+///
+/// @return The properties
 inline creatureProperties getCreatureProperties(CreatureType creature) {
 	auto it = creaturePropertiesMap.find(creature);
 	if (it == creaturePropertiesMap.end())

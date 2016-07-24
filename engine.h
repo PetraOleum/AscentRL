@@ -163,6 +163,24 @@ class Engine {
 
 		void ReportState();
 
+		/// @brief Handle one creature attacking another
+		///
+		/// @param attacker The attacker
+		/// @param defender The defender
+		void handleAttack(Creature * attacker, Creature * defender);
+
+		/// @brief Remove a creature from the game
+		///
+		/// @param deadded The creature to be removed
+		void removeFromGame(Creature * deadded);
+
+		/// @brief Get the player's properties
+		///
+		/// @return The player properties
+		inline const creatureProperties& getPlayerProperties() {
+			return player->Properties();
+		}
+
 };
 
 #endif

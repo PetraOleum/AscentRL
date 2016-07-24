@@ -5,6 +5,7 @@
 #include "region.h"
 #include <map>
 #include <queue>
+#include <random>
 
 
 /// @brief Class that holds a creature; use as defined by new
@@ -28,7 +29,20 @@ class Creature {
 		/// @return Location of the witch
 		Point findTarget();
 
+		/// @brief The target
 		Point target = Point(0,0);
+
+		/// @brief The properties
+		creatureProperties properties;
+
+		/// @brief Random number generator
+		std::mt19937 gen;
+
+		/// @brief The d20
+		std::uniform_int_distribution<int> d20 = std::uniform_int_distribution<int>(1, 20);
+
+		/// @brief Weapon dice
+		std::uniform_int_distribution<int> dweapon;
 
 	public:
 		/// @brief Constructor, specifying starting position, region, type
@@ -126,6 +140,47 @@ class Creature {
 		///
 		/// @return State string
 		std::string ToString() const;
+
+		/// @brief Expose reference to properties
+		///
+		/// @return The properties
+		inline const creatureProperties& Properties() const {
+			return properties;
+		}
+
+		/// @brief Roll attack dice
+		///
+		/// @return A d20 pluss the hit bonus
+		inline int rollToAttack() {
+			return d20(gen) + this->properties.hitBonus;
+		}
+
+		/// @brief Roll the weapon dice and add baseAttack
+		///
+		/// @return The value of the roll
+		inline int rollWeapon() {
+			return dweapon(gen) + this->properties.baseAttack;
+		}
+
+		/// @brief Take a hit of specified damage
+		///
+		/// @param hpDamage The amount of damage to take
+		///
+		/// @return Whether the creature is still alive
+		inline bool takeHit(int hpDamage) {
+			this->properties.HP -= hpDamage;
+			return (this->properties.HP > 0);
+		}
+
+		/// @brief Determing if the creature is alive
+		///
+		/// @return True if the HP is greater than 0
+		inline bool isAlive() {
+			return (this->properties.HP > 0);
+		}
+
+		/// @brief Kill this creature
+		void kill();
 
 };
 

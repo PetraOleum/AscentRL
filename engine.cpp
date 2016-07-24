@@ -302,10 +302,11 @@ std::queue<Direction> * Engine::astar(Point start, Point finish, Point relativeT
 }
 
 void Engine::doMonsterTurns() {
-	for (auto monster : creatures) {
-		monster->updateFOV(FOV(monster->getPosition(), monster->getRegion()));
-		monsterMove(monster, monster->propose_action());
-	}
+	for (auto monster : creatures) 
+		if (monster->isAlive()) {
+			monster->updateFOV(FOV(monster->getPosition(), monster->getRegion()));
+			monsterMove(monster, monster->propose_action());
+		}
 	refreshFOV();
 //	ReportState();
 }
@@ -317,8 +318,15 @@ bool Engine::monsterMove(Creature * creature, Direction direction) {
 	Point originalPosition = creature->getPosition();
 	auto nbaf = relBaF(np, originalPosition, cRegion);
 	Background nb = nbaf.first;
-	if (!bkgrProps.at(nb).passible || getForegroundCreature(nbaf.second) != CreatureType::NONE)
+	if (!bkgrProps.at(nb).passible)
 		return false;
+	if (getForegroundCreature(nbaf.second) != CreatureType::NONE) {
+		Creature * defender = cRegion->getCreature(PAIR_SUM(np, originalPosition));
+		if (defender == NULL)
+			return false;
+		handleAttack(creature, defender);
+		return true;
+	}
 	if (cRegion->getBackground(PAIR_SUM(np, originalPosition)) != nb)
 		swapRegions(creature);
 	cRegion = creature->getRegion();
@@ -342,4 +350,28 @@ void Engine::ReportState() {
 //	printf("Player:\n%s\n", player->ToString().c_str());
 	for (Creature * cr : creatures)
 		printf("Creature:\n%s\n", cr->ToString().c_str());
+}
+
+void Engine::handleAttack(Creature * attacker, Creature * defender) {
+	if (attacker == NULL || defender == NULL)
+		return;
+	int attackval = attacker->rollToAttack();
+	if (attackval >= defender->Properties().AC)
+		if (!defender->takeHit(attacker->rollWeapon()))
+			removeFromGame(defender);
+}
+
+void Engine::removeFromGame(Creature * deadded) {
+	// For the moment, the player can't die
+	if (deadded == player)
+		return;
+	if (deadded == NULL)
+		return;
+	Region * dcregion = deadded->getRegion();
+	Connection cn = dcregion->connectionAt(deadded->getPosition());
+	if (cn.to != NULL) {
+		cn.to->putCreature(cn.toLocation, NULL);
+	}
+	dcregion->putCreature(deadded->getPosition(), NULL);
+	deadded->kill();
 }

@@ -177,7 +177,7 @@ class Region {
 		/// @return Pointer to the creature
 		inline Creature * getCreature(Point location) {
 			auto it = creatures.find(location);
-			if (it == creatures.end())
+			if (it != creatures.end())
 				return it->second;
 			else
 				return NULL;
