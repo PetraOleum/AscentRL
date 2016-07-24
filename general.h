@@ -152,11 +152,53 @@ const std::map<Direction, Point> displacementMap = {
 #define PAIR_MULTIPLY(A, B) (std::make_pair(A.first * B.first, A.second * B.second))
 
 
-/// @brief Map creature types to Foregrounds
-const std::map<CreatureType, Foreground> creatureForegrounds = {
-	{CreatureType::NONE, Foreground::NONE},
-	{CreatureType::Witch, Foreground::Witch},
-	{CreatureType::Rat, Foreground::Rat}
+/// @brief Properties of a creature type
+struct creatureProperties {
+	/// @brief Corresponding foreground of creature
+	Foreground foreground;
+	/// @brief Speed of creature
+	double speed;
+	/// @brief Base HP of creature
+	int HP;
+	/// @brief addition to die roll of attack
+	int baseAttack;
+	/// @brief Dice to roll for attack e.g. d4
+	int attackDice;
+	/// @brief bonus to-hit
+	int hitBonus;
+	/// @brief AC of creature
+	int AC;
+};
+
+/// @brief CreatureType to creatureProperties map
+const std::map<CreatureType, creatureProperties> creaturePropertiesMap = {
+	{CreatureType::NONE, {
+				     Foreground::NONE,
+				     0.0,
+				     0,
+				     0,
+				     0,
+				     0,
+				     0
+			     }},
+	{CreatureType::Witch, {
+				      Foreground::Witch,
+				      1.0,
+				      20,
+				      2,
+				      6,
+				      4,
+				      14
+			      }},
+	{CreatureType::Rat, {
+				    Foreground::Rat,
+				    1.0,
+				    5,
+				    0,
+				    4,
+				    0,
+				    10
+			    }}
 };
 
 /// @brief Get the foreground corresponding to the creature
@@ -165,9 +207,16 @@ const std::map<CreatureType, Foreground> creatureForegrounds = {
 ///
 /// @return The corresponding Foreground (Foreground::NONE if not defined)
 inline Foreground getCreatureForeground(CreatureType creature) {
-	auto it = creatureForegrounds.find(creature);
-	if (it == creatureForegrounds.end())
+	auto it = creaturePropertiesMap.find(creature);
+	if (it == creaturePropertiesMap.end())
 		return Foreground::NONE;
+	return it->second.foreground;
+}
+
+inline creatureProperties getCreatureProperties(CreatureType creature) {
+	auto it = creaturePropertiesMap.find(creature);
+	if (it == creaturePropertiesMap.end())
+		creaturePropertiesMap.at(CreatureType::NONE);
 	return it->second;
 }
 
