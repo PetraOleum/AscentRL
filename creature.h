@@ -44,6 +44,9 @@ class Creature {
 		/// @brief Weapon dice
 		std::uniform_int_distribution<int> dweapon;
 
+		/// @brief Has creature been killed?
+		bool killed = false;
+
 	public:
 		/// @brief Constructor, specifying starting position, region, type
 		///
@@ -174,13 +177,50 @@ class Creature {
 
 		/// @brief Determing if the creature is alive
 		///
-		/// @return True if the HP is greater than 0
-		inline bool isAlive() {
+		/// @return True if the HP is greater than 0 and has not been "killed"
+		inline bool isAlive() const {
+			if (killed)
+				return false;
 			return (this->properties.HP > 0);
 		}
 
 		/// @brief Kill this creature
 		void kill();
+
+		/// @brief Determine if the creature is at maximum health (or greater)
+		///
+		/// @return If is at max
+		inline bool maxHealth() const {
+			return (this->properties.HP >= getCreatureProperties(this->type).HP);
+		}
+
+		/// @brief Heal creature by specified amount
+		///
+		/// @param healing The amout to heal byj
+		///
+		/// @return If now at max health
+		inline bool heal(int healing) {
+			this->properties.HP += healing;
+			if (this->maxHealth()) {
+				this->properties.HP = getCreatureProperties(this->type).HP;
+				return true;
+			}
+			return false;
+		}
+
+		/// @brief Reference to the HP
+		///
+		/// @return HP (const reference)
+		inline const int& HP() const {
+			return this->properties.HP;
+		}
+
+		/// @brief Expose AC
+		///
+		/// @return Reference to AC
+		inline const int& AC() const {
+			return this->properties.AC;
+		}
 
 };
 

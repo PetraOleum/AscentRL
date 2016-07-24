@@ -306,8 +306,14 @@ void Engine::doMonsterTurns() {
 		if (monster->isAlive()) {
 			monster->updateFOV(FOV(monster->getPosition(), monster->getRegion()));
 			monsterMove(monster, monster->propose_action());
+			if (!monster->maxHealth())
+				if (probdist(randomengine) < monster->Properties().regen)
+					monster->heal(1);
 		}
 	refreshFOV();
+	if (probdist(randomengine) < player->Properties().regen)
+		player->heal(1);
+//	printf("HP: %d\n", player->Properties().HP);
 //	ReportState();
 }
 
@@ -356,7 +362,7 @@ void Engine::handleAttack(Creature * attacker, Creature * defender) {
 	if (attacker == NULL || defender == NULL)
 		return;
 	int attackval = attacker->rollToAttack();
-	if (attackval >= defender->Properties().AC)
+	if (attackval >= defender->AC())
 		if (!defender->takeHit(attacker->rollWeapon()))
 			removeFromGame(defender);
 }

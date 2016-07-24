@@ -171,6 +171,8 @@ struct creatureProperties {
 	int hitBonus;
 	/// @brief AC of creature
 	int AC;
+	/// @brief Probability of regenerating a hitpoint each turn
+	double regen;
 };
 
 /// @brief CreatureType to creatureProperties map
@@ -178,6 +180,7 @@ const std::map<CreatureType, creatureProperties> creaturePropertiesMap = {
 	{CreatureType::NONE, {
 				     Foreground::NONE,
 				     0.0,
+				     0,
 				     0,
 				     0,
 				     0,
@@ -191,7 +194,8 @@ const std::map<CreatureType, creatureProperties> creaturePropertiesMap = {
 				      2,
 				      6,
 				      4,
-				      14
+				      14,
+				      0.2
 			      }},
 	{CreatureType::Rat, {
 				    Foreground::Rat,
@@ -200,7 +204,8 @@ const std::map<CreatureType, creatureProperties> creaturePropertiesMap = {
 				    0,
 				    4,
 				    0,
-				    10
+				    10,
+				    0.1
 			    }}
 };
 

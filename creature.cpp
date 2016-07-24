@@ -173,4 +173,5 @@ void Creature::kill() {
 	this->region = NULL;
 	this->position = {0,0};
 	this->target = {0,0};
+	this->killed = true;
 }
