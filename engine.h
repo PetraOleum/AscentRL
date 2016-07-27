@@ -20,8 +20,14 @@
 /// @brief The radius of the field of view
 #define FOV_RADIUS 15
 
-/// @brief Background/foreground pair
-using BaF = std::pair<Background, Foreground>;
+/// @brief Background/foreground struct
+struct BaF {
+	Background background;
+	Foreground foreground;
+	CreatureType creatureHere;
+	ItemType itemHere;
+	double HPPerHere;
+};
 
 /// @brief Class for the game engine
 class Engine {
@@ -99,6 +105,20 @@ class Engine {
 		///
 		/// @return The foreground value, if visible
 		Foreground getForeground(Point point);
+
+		/// @brief Get whether or not a creature is seen here
+		///
+		/// @param point Point
+		///
+		/// @return True if creature seen here
+		bool seeCreatureHere(Point point);
+
+		/// @brief Get the HP fraction here
+		///
+		/// @param point The position
+		///
+		/// @return The HP fraction
+		double creatureHPPercentHere(Point point);
 
 		/// @brief Move in a direction
 		///

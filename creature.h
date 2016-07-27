@@ -194,6 +194,16 @@ class Creature {
 			return (this->properties.HP >= getCreatureProperties(this->type).HP);
 		}
 
+		/// @brief Get the fraction of health the creature is on
+		///
+		/// @return Current HP / creatureProperties HP, assuming not 0
+		inline double healthFraction() const {
+			auto creatureHP = getCreatureProperties(this->type).HP;
+			if (creatureHP == 0)
+				return 0;
+			return (this->properties.HP) / creatureHP;
+		}
+
 		/// @brief Heal creature by specified amount
 		///
 		/// @param healing The amout to heal byj

@@ -81,6 +81,8 @@ void AscentApp::OnRender() {
 			Point corP = Point(x - numSquaresX / 2, y - numSquaresY / 2);
 			renderBackground(engine->getBackground(corP), x, y);
 			renderForeground(engine->getForeground(corP), x, y);
+			if (engine->seeCreatureHere(corP))
+				renderHPLine(engine->creatureHPPercentHere(corP), x, y);
 		}
 	if (mouseInSquares) {
 		SDL_SetRenderDrawColor(renderer, 0x00, 0x00, 0xFF, 0xFF);
@@ -342,4 +344,30 @@ void AscentApp::drawStatusBox() {
 		SDL_RenderFillRect(renderer, &messageBackgroundRect);
 		SDL_RenderCopy(renderer, statusMessage, NULL, &messageRect);
 	}
+}
+
+void AscentApp::renderHPLine(double HPPercentage, int xsquare, int ysquare) {
+	printf("HP Percentage at %d, %d: %f\n", xsquare, ysquare, HPPercentage);
+	if (HPPercentage > 1)
+		HPPercentage = 1;
+	else if (HPPercentage < 0)
+		HPPercentage = 0;
+
+	int xos = xOfSquare(xsquare);
+	int yos = yOfSquare(ysquare);
+
+	int divider = SQUARE_SIZE * HPPercentage;
+
+	SDL_SetRenderDrawColor(renderer, 0x00, 0xFF, 0x00, 0xFF);
+	SDL_RenderDrawLine(renderer,
+			xos,
+			yos,
+			xos + divider - 1,
+			yos);
+	SDL_SetRenderDrawColor(renderer, 0xFF, 0x00, 0x00, 0xFF);
+	SDL_RenderDrawLine(renderer,
+			xos + divider,
+			yos,
+			xos + SQUARE_SIZE - 1,
+			yos);
 }

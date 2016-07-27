@@ -267,7 +267,7 @@ inline Foreground getItemForeground(ItemType type) {
 	return it->second;
 }
 
-/// @brief Hold the Visibility information + foreground/background of a square
+/// @brief Hold the Visibility information + foreground/background of a square and other stuff to pass to displaying function
 struct Visibility {
 	/// @brief Whether the square is visible
 	bool visible;
@@ -275,6 +275,12 @@ struct Visibility {
 	Background background;
 	/// @brief Value of the foreground
 	Foreground foreground;
+	/// @brief The type of creature here
+	CreatureType creature;
+	/// @brief The type of item here
+	ItemType item;
+	/// @brief The hp proportion (0 to 1) of the creature here
+	double creatureHP;
 };
 
 #endif

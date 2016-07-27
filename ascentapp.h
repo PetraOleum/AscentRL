@@ -168,6 +168,13 @@ class AscentApp {
 		/// @param ysquare Square y coord
 		void renderForeground(Foreground foreground, int xsquare, int ysquare);
 
+		/// @brief Render the HP line at a square
+		///
+		/// @param HPPercentage The HP fraction (not actually percentage)
+		/// @param xsquare Square x coord
+		/// @param ysquare Square y coord
+		void renderHPLine(double HPPercentage, int xsquare, int ysquare);
+
 		/* Controls stuff */
 
 		/// @brief Planned moves

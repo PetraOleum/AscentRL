@@ -66,6 +66,35 @@ Foreground Engine::getForeground(Point point) {
 		return Foreground::NONE;
 }
 
+bool Engine::seeCreatureHere(Point point) {
+	if (visiblelocations == NULL) {
+		fprintf(stderr, "Accessing FOV map before creation\n");
+		return false;
+	}
+	auto it = visiblelocations->find(point);
+	if (it == visiblelocations->end())
+		return false;
+	else if (it->second.visible)
+		return it->second.creature != CreatureType::NONE;
+	else
+		return false;
+}
+
+double Engine::creatureHPPercentHere(Point point) {
+	if (visiblelocations == NULL) {
+		fprintf(stderr, "Accessing FOV map before creation\n");
+		return 0.0;
+	}
+	auto it = visiblelocations->find(point);
+	if (it == visiblelocations->end())
+		return 0.0;
+	else if (it->second.visible)
+		return it->second.creatureHP;
+	else 
+		return 0.0;
+
+}
+
 bool Engine::Move(Direction direction) {
 	if (!monsterMove(player, direction))
 		return false;
@@ -78,7 +107,10 @@ BaF Engine::relBaF(Point point, const Point & relto, Region * region) {
 	Point relpt = PAIR_SUM(relto, point);
 	BaF regionBaF = {
 		region->getBackground(relpt),
-		region->getForeground(relpt)
+		region->getForeground(relpt),
+		getForegroundCreature(region->getForeground(relpt)),
+		region->topItem(relpt),
+		(region->hasCreature(relpt)) ? region->getCreature(relpt)->healthFraction() : 0
 	};
 	Connection cn = region->connectionAt(relto);
 	if (cn.to != NULL) {
@@ -88,9 +120,12 @@ BaF Engine::relBaF(Point point, const Point & relto, Region * region) {
 			Point altrelpt = PAIR_SUM(relpt, PAIR_SUBTRACT(cn.toLocation, relto));
 			BaF altBaF = {
 				cn.to->getBackground(altrelpt),
-				cn.to->getForeground(altrelpt)
+				cn.to->getForeground(altrelpt),
+				getForegroundCreature(cn.to->getForeground(altrelpt)),
+				cn.to->topItem(altrelpt),
+				(cn.to->hasCreature(altrelpt)) ? cn.to->getCreature(relpt)->healthFraction() : 0
 			};
-			if (altBaF.first != Background::EMPTYNESS) {
+			if (altBaF.background != Background::EMPTYNESS) {
 				return altBaF;
 			}
 		}
@@ -323,10 +358,10 @@ bool Engine::monsterMove(Creature * creature, Direction direction) {
 	Point np = DISPLACEMENT(direction);
 	Point originalPosition = creature->getPosition();
 	auto nbaf = relBaF(np, originalPosition, cRegion);
-	Background nb = nbaf.first;
+	Background nb = nbaf.background;
 	if (!bkgrProps.at(nb).passible)
 		return false;
-	if (getForegroundCreature(nbaf.second) != CreatureType::NONE) {
+	if (nbaf.creatureHere != CreatureType::NONE) {
 		Creature * defender = cRegion->getCreature(PAIR_SUM(np, originalPosition));
 		if (defender == NULL)
 			return false;

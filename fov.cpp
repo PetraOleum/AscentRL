@@ -6,8 +6,11 @@ std::map<Point, Visibility>* Engine::FOV(Point point, Region * region) {
 	BaF curpt = relBaF({0,0}, point, region);
 	Visibility curvs = {
 		true,
-		curpt.first,
-		curpt.second
+		curpt.background,
+		curpt.foreground,
+		curpt.creatureHere,
+		curpt.itemHere,
+		curpt.HPPerHere
 	};
 	(*visMap)[Point(0,0)] = curvs;
 
@@ -34,7 +37,7 @@ std::map<Point, Visibility>* Engine::FOV(Point point, Region * region) {
 				double endingAngle = startingAngle + arange;
 				double centreAngle = startingAngle + arange / 2;
 				BaF thisCell = relBaF(tp, point, region);
-				bool tct = bkgrProps.at(thisCell.first).transparent;
+				bool tct = bkgrProps.at(thisCell.background).transparent;
 				bool centreAngleBlocked = false;
 				bool endingAngleBlocked = false;
 				bool startingAngleBlocked = false;
@@ -62,8 +65,11 @@ std::map<Point, Visibility>* Engine::FOV(Point point, Region * region) {
 				if (tcs) {
 					Visibility thisvs = {
 						true,
-						thisCell.first,
-						thisCell.second
+						thisCell.background,
+						thisCell.foreground,
+						thisCell.creatureHere,
+						thisCell.itemHere,
+						thisCell.HPPerHere
 					};
 					(*visMap)[tp] = thisvs;
 					if (!tct)
@@ -100,7 +106,7 @@ std::map<Point, Visibility>* Engine::FOV(Point point, Region * region) {
 				double endingAngle = startingAngle + arange;
 				double centreAngle = startingAngle + arange / 2;
 				BaF thisCell = relBaF(tp, point, region);
-				bool tct = bkgrProps.at(thisCell.first).transparent;
+				bool tct = bkgrProps.at(thisCell.background).transparent;
 				bool centreAngleBlocked = false;
 				bool endingAngleBlocked = false;
 				bool startingAngleBlocked = false;
@@ -128,8 +134,11 @@ std::map<Point, Visibility>* Engine::FOV(Point point, Region * region) {
 				if (tcs) {
 					Visibility thisvs = {
 						true,
-						thisCell.first,
-						thisCell.second
+						thisCell.background,
+						thisCell.foreground,
+						thisCell.creatureHere,
+						thisCell.itemHere,
+						thisCell.HPPerHere
 					};
 					(*visMap)[tp] = thisvs;
 					if (!tct)
