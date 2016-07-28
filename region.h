@@ -133,6 +133,20 @@ class Region {
 			}
 		}
 
+		/// @brief Expose widith
+		///
+		/// @return The width
+		inline const int& Width() {
+			return this->width;
+		}
+
+		/// @brief Expose height
+		///
+		/// @return The height
+		inline const int& Height() {
+			return this->height;
+		}
+
 		/// @brief Place an item on the bottom of the queue at a particiular location
 		///
 		/// @param location The location

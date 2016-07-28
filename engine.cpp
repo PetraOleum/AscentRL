@@ -209,8 +209,10 @@ void Engine::manageAltRegion(Region * curregion, const Point& position) {
 				return;
 			}
 //			printf("Attached\n");
-			if (!foundfree)
+			if (!foundfree) {
+				PopulateNewRegion(nr);
 				regions.push_back(nr);
+			}
 			Region * alternateRegion = nr;
 //			altDisplacement = PAIR_SUBTRACT(
 //					freept.first,
@@ -337,7 +339,8 @@ std::queue<Direction> * Engine::astar(Point start, Point finish, Point relativeT
 }
 
 void Engine::doMonsterTurns() {
-	for (auto monster : creatures) 
+	for (unsigned int i = 0; i < creatures.size(); i++) {
+		Creature * monster = creatures[i];
 		if (monster->isAlive()) {
 			monster->updateFOV(FOV(monster->getPosition(), monster->getRegion()));
 			monsterMove(monster, monster->propose_action());
@@ -345,6 +348,7 @@ void Engine::doMonsterTurns() {
 				if (probdist(randomengine) < monster->Properties().regen)
 					monster->heal(1);
 		}
+	}
 	refreshFOV();
 	if (probdist(randomengine) < player->Properties().regen)
 		player->heal(1);
@@ -415,4 +419,22 @@ void Engine::removeFromGame(Creature * deadded) {
 	}
 	dcregion->putCreature(deadded->getPosition(), NULL);
 	deadded->kill();
+}
+
+void Engine::PopulateNewRegion(Region * region) {
+	for (int x = 0; x < region->Width(); x++)
+		for (int y = 0; y < region->Height(); y++) {
+			Background rb = region->getBackground(Point(x, y));
+			auto bp = bkgrProps.at(rb);
+			if (bp.passible && rb != Background::Door && rb != Background::MarkedDoor) {
+				if (!region->hasCreature(Point(x, y)))
+					if (probdist(randomengine) < 0.1)
+					{
+						Creature * cr = new Creature(Point(x, y), region, CreatureType::Rat);
+						region->putCreature(Point(x, y), cr);
+						creatures.push_back(cr);
+					}
+			
+			}
+		}
 }

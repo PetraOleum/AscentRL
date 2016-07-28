@@ -83,6 +83,11 @@ class Engine {
 		///
 		/// @return A new std::map of visibility, relative to point
 		std::map<Point, Visibility>* FOV(Point point, Region * region);
+		
+		/// @brief Populate a new region with creatures
+		///
+		/// @param region The region
+		void PopulateNewRegion(Region * region);
 
 	public:
 		/// @brief Constructor
