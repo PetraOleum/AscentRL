@@ -367,8 +367,15 @@ bool Engine::monsterMove(Creature * creature, Direction direction) {
 		return false;
 	if (nbaf.creatureHere != CreatureType::NONE) {
 		Creature * defender = cRegion->getCreature(PAIR_SUM(np, originalPosition));
-		if (defender == NULL)
-			return false;
+		if (defender == NULL) {
+			//Must be across a region boundary
+			Connection cn = cRegion->connectionAt(originalPosition);
+			if (cn.to == NULL) //Something funny
+				return false;
+			defender = cn.to->getCreature(PAIR_SUM(cn.toLocation, np));
+			if (defender == NULL)
+				return false;
+		}
 		handleAttack(creature, defender);
 		return true;
 	}
