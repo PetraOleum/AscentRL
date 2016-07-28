@@ -123,7 +123,7 @@ BaF Engine::relBaF(Point point, const Point & relto, Region * region) {
 				cn.to->getForeground(altrelpt),
 				getForegroundCreature(cn.to->getForeground(altrelpt)),
 				cn.to->topItem(altrelpt),
-				(cn.to->hasCreature(altrelpt)) ? cn.to->getCreature(relpt)->healthFraction() : 0
+				(cn.to->hasCreature(altrelpt)) ? cn.to->getCreature(altrelpt)->healthFraction() : 0
 			};
 			if (altBaF.background != Background::EMPTYNESS) {
 				return altBaF;

@@ -347,7 +347,6 @@ void AscentApp::drawStatusBox() {
 }
 
 void AscentApp::renderHPLine(double HPPercentage, int xsquare, int ysquare) {
-	printf("HP Percentage at %d, %d: %f\n", xsquare, ysquare, HPPercentage);
 	if (HPPercentage > 1)
 		HPPercentage = 1;
 	else if (HPPercentage < 0)
@@ -358,16 +357,30 @@ void AscentApp::renderHPLine(double HPPercentage, int xsquare, int ysquare) {
 
 	int divider = SQUARE_SIZE * HPPercentage;
 
-	SDL_SetRenderDrawColor(renderer, 0x00, 0xFF, 0x00, 0xFF);
-	SDL_RenderDrawLine(renderer,
-			xos,
-			yos,
-			xos + divider - 1,
-			yos);
+	SDL_Rect remainingHealthRect = {
+		xos, yos,
+		divider,
+		3
+	};
+	SDL_Rect redHealthRect = {
+		xos + divider,
+		yos,
+		SQUARE_SIZE - divider,
+		3
+	};
+
+	SDL_SetRenderDrawColor(renderer, 0x00, 0xBF, 0x00, 0xFF);
+	SDL_RenderFillRect(renderer, &remainingHealthRect);
+//	SDL_RenderDrawLine(renderer,
+//			xos,
+//			yos,
+//			xos + divider - 1,
+//			yos);
 	SDL_SetRenderDrawColor(renderer, 0xFF, 0x00, 0x00, 0xFF);
-	SDL_RenderDrawLine(renderer,
-			xos + divider,
-			yos,
-			xos + SQUARE_SIZE - 1,
-			yos);
+	SDL_RenderFillRect(renderer, &redHealthRect);
+//	SDL_RenderDrawLine(renderer,
+//			xos + divider,
+//			yos,
+//			xos + SQUARE_SIZE - 1,
+//			yos);
 }

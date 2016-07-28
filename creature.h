@@ -198,7 +198,7 @@ class Creature {
 		///
 		/// @return Current HP / creatureProperties HP, assuming not 0
 		inline double healthFraction() const {
-			auto creatureHP = getCreatureProperties(this->type).HP;
+			double creatureHP = getCreatureProperties(this->type).HP;
 			if (creatureHP == 0)
 				return 0;
 			return (this->properties.HP) / creatureHP;
