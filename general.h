@@ -266,6 +266,15 @@ inline Foreground getItemForeground(ItemType type) {
 		return Foreground::NONE;
 	return it->second;
 }
+/// @brief Enum that describes whether the creatures on the same team
+enum class Team : uint8_t {
+	/// @brief Default
+	NONE,
+	/// @brief The player, and any allied monsters
+	Player,
+	/// @brief The monsters
+	Monsters
+};
 
 /// @brief Hold the Visibility information + foreground/background of a square and other stuff to pass to displaying function
 struct Visibility {
@@ -277,10 +286,13 @@ struct Visibility {
 	Foreground foreground;
 	/// @brief The type of creature here
 	CreatureType creature;
+	/// @brief The team of the creature
+	Team team;
 	/// @brief The type of item here
 	ItemType item;
 	/// @brief The hp proportion (0 to 1) of the creature here
 	double creatureHP;
 };
+
 
 #endif

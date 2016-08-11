@@ -47,13 +47,19 @@ class Creature {
 		/// @brief Has creature been killed?
 		bool killed = false;
 
+		/// @brief On monster team by default, not NONE
+		Team team = Team::Monsters;
+
 	public:
 		/// @brief Constructor, specifying starting position, region, type
 		///
 		/// @param position The starting position
 		/// @param region Pointer to the starting region
 		/// @param type The type of creature
-		Creature(Point position, Region * region, CreatureType type);
+		/// @param team The team the creature is on
+		Creature(Point position, Region * region, CreatureType type, Team team);
+		Creature(Point position, Region * region, CreatureType type) : Creature(position, region, type, Team::Monsters) {}
+		Creature(Point position, Region * region) : Creature(position, region, CreatureType::Rat, Team::Monsters) {}
 
 		/// @brief Creature destructor
 		~Creature();
@@ -230,6 +236,10 @@ class Creature {
 		/// @return Reference to AC
 		inline const int& AC() const {
 			return this->properties.AC;
+		}
+
+		inline const Team& creatureTeam() {
+			return team;
 		}
 
 };

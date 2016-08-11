@@ -25,6 +25,7 @@ struct BaF {
 	Background background;
 	Foreground foreground;
 	CreatureType creatureHere;
+	Team creatureTeam;
 	ItemType itemHere;
 	double HPPerHere;
 };
@@ -192,7 +193,7 @@ class Engine {
 		///
 		/// @param attacker The attacker
 		/// @param defender The defender
-		void handleAttack(Creature * attacker, Creature * defender);
+		bool handleAttack(Creature * attacker, Creature * defender);
 
 		/// @brief Remove a creature from the game
 		///

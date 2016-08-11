@@ -13,7 +13,7 @@ Engine::Engine() {
 	//Temp stuff with 1 region
 	
 	Region * StartRegion = new Region(10, 10, RoomType::Room);
-	player = new Creature({0, 0}, StartRegion, CreatureType::Witch);
+	player = new Creature({0, 0}, StartRegion, CreatureType::Witch, Team::Player);
 	Creature * rat = new Creature({5, 5}, StartRegion, CreatureType::Rat);
 	StartRegion->putCreature(rat->getPosition(), rat);
 	creatures.push_back(rat);
@@ -109,6 +109,7 @@ BaF Engine::relBaF(Point point, const Point & relto, Region * region) {
 		region->getBackground(relpt),
 		region->getForeground(relpt),
 		getForegroundCreature(region->getForeground(relpt)),
+		(region->hasCreature(relpt)) ? region->getCreature(relpt)->creatureTeam() : Team::NONE,
 		region->topItem(relpt),
 		(region->hasCreature(relpt)) ? region->getCreature(relpt)->healthFraction() : 0
 	};
@@ -122,6 +123,7 @@ BaF Engine::relBaF(Point point, const Point & relto, Region * region) {
 				cn.to->getBackground(altrelpt),
 				cn.to->getForeground(altrelpt),
 				getForegroundCreature(cn.to->getForeground(altrelpt)),
+				(cn.to->hasCreature(altrelpt)) ? cn.to->getCreature(altrelpt)->creatureTeam() : Team::NONE,
 				cn.to->topItem(altrelpt),
 				(cn.to->hasCreature(altrelpt)) ? cn.to->getCreature(altrelpt)->healthFraction() : 0
 			};
@@ -404,13 +406,16 @@ void Engine::ReportState() {
 		printf("Creature:\n%s\n", cr->ToString().c_str());
 }
 
-void Engine::handleAttack(Creature * attacker, Creature * defender) {
+bool Engine::handleAttack(Creature * attacker, Creature * defender) {
 	if (attacker == NULL || defender == NULL)
-		return;
+		return false;
+	if (attacker->creatureTeam() == defender->creatureTeam())
+		return false;
 	int attackval = attacker->rollToAttack();
 	if (attackval >= defender->AC())
 		if (!defender->takeHit(attacker->rollWeapon()))
 			removeFromGame(defender);
+	return true;
 }
 
 void Engine::removeFromGame(Creature * deadded) {

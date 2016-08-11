@@ -9,11 +9,12 @@ Foreground getCreaturePointerForeground(Creature* creature) {
 	return getCreatureForeground(creature->getType());
 }
 
-Creature::Creature(Point position, Region * region, CreatureType type) {
+Creature::Creature(Point position, Region * region, CreatureType type, Team team) {
 	this->position = position;
 	this->region = region;
 	this->type = type;
 	this->properties = getCreatureProperties(type);
+	this->team = team;
 	dweapon = std::uniform_int_distribution<int>(1, this->properties.attackDice);
 	std::random_device rd;
 	gen = std::mt19937(rd());
@@ -79,7 +80,9 @@ std::queue<Direction> * Creature::astar(Point start, Point finish) {
 				PAIR_SUM(disp.second, current),
 				disp.first
 			};
-			Background nb = (*cvismap)[next.first].background;
+			Visibility npvis = (*cvismap)[next.first];
+			Background nb = npvis.background;
+			
 //			BaF nbaf = relBaF(next.first, relativeTo);
 			if (!bkgrProps.at(nb).passible)
 				continue;

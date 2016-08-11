@@ -9,6 +9,7 @@ std::map<Point, Visibility>* Engine::FOV(Point point, Region * region) {
 		curpt.background,
 		curpt.foreground,
 		curpt.creatureHere,
+		curpt.creatureTeam,
 		curpt.itemHere,
 		curpt.HPPerHere
 	};
@@ -68,6 +69,7 @@ std::map<Point, Visibility>* Engine::FOV(Point point, Region * region) {
 						thisCell.background,
 						thisCell.foreground,
 						thisCell.creatureHere,
+						thisCell.creatureTeam,
 						thisCell.itemHere,
 						thisCell.HPPerHere
 					};
@@ -137,6 +139,7 @@ std::map<Point, Visibility>* Engine::FOV(Point point, Region * region) {
 						thisCell.background,
 						thisCell.foreground,
 						thisCell.creatureHere,
+						thisCell.creatureTeam,
 						thisCell.itemHere,
 						thisCell.HPPerHere
 					};
