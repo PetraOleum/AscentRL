@@ -81,12 +81,14 @@ std::queue<Direction> * Creature::astar(Point start, Point finish) {
 				disp.first
 			};
 			Visibility npvis = (*cvismap)[next.first];
+//			if (npvis.team == this->team)
+//				continue;
 			Background nb = npvis.background;
 			
 //			BaF nbaf = relBaF(next.first, relativeTo);
 			if (!bkgrProps.at(nb).passible)
 				continue;
-			movement_cost_t new_cost = ((disp.second.first != 0 && disp.second.second != 0) ? 1.41421356237 : 1) + current_cost;
+			movement_cost_t new_cost = ((disp.second.first != 0 && disp.second.second != 0) ? 1.41421356237 : 1) + ((npvis.team == this->team) ? 2 : 0) + current_cost;
 			if (cost_so_far.find(next.first) == cost_so_far.end()) {
 				fronteir.push(std::make_pair(new_cost, next));
 				came_from[next.first] = {
@@ -131,7 +133,7 @@ Point Creature::findTarget() {
 		return {0,0};
 	Point tt = target;
 	for (auto it : *cvismap)
-		if (it.second.visible && it.second.foreground == Foreground::Witch) {
+		if (it.second.visible && it.second.creature != CreatureType::NONE && it.second.team != this->team) {
 			tt = it.first;
 		}
 	return tt;
