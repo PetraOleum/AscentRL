@@ -6,7 +6,7 @@
 #include <map>
 #include <queue>
 #include <random>
-
+#include "inventory.h"
 
 /// @brief Class that holds a creature; use as defined by new
 class Creature {
@@ -49,6 +49,9 @@ class Creature {
 
 		/// @brief On monster team by default, not NONE
 		Team team = Team::Monsters;
+
+		/// @brief The inventory of the creature
+		Inventory inventory;
 
 	public:
 		/// @brief Constructor, specifying starting position, region, type
@@ -240,6 +243,13 @@ class Creature {
 
 		inline const Team& creatureTeam() {
 			return team;
+		}
+
+		/// @brief Expose inventory
+		///
+		/// @return Const reference to the inventory object
+		inline const Inventory& getInventory() {
+			return inventory;
 		}
 
 };

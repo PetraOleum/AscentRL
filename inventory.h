@@ -11,7 +11,7 @@ class Inventory {
 
 		inventory_entry_t inv[26*2];
 
-		inline int chartoindex(const char& c) {
+		inline int chartoindex(const char& c) const {
 			if (c >= 'a' && c <= 'z')
 				return c - 'a';
 			if (c >= 'A' && c <= 'Z')
@@ -19,7 +19,7 @@ class Inventory {
 			return -1;
 		}
 
-		inline char indextochar(const int& i) {
+		inline char indextochar(const int& i) const {
 			if (i < 0)
 				return '\0';
 			if (i < 26)
@@ -37,14 +37,14 @@ class Inventory {
 		Inventory& operator=(const Inventory& other);
 
 
-		inline unsigned int total() {
+		inline unsigned int total() const {
 			unsigned int c = 0;
 			for (int i = 0; i < 26 * 2; i++)
 				c += inv[i].second;
 			return c;
 		}
 
-		inline unsigned int total(ItemType item) {
+		inline unsigned int total(ItemType item) const {
 			unsigned int c = 0;
 			for (int i = 0; i < 26 * 2; i++)
 				if (inv[i].first == item)
@@ -52,7 +52,7 @@ class Inventory {
 			return c;
 		}
 
-		inline bool has(ItemType item, unsigned int count = 1) {
+		inline bool has(ItemType item, unsigned int count = 1) const {
 			return total(item) >= count;
 		}
 
