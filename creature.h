@@ -252,6 +252,26 @@ class Creature {
 			return inventory;
 		}
 
+		/// @brief Take (i.e. remove) an item from the inventory of the creature
+		///
+		/// @param item The item
+		/// @param count The number of said items
+		///
+		/// @return Whether it is successful
+		inline bool take(ItemType item, unsigned int count = 1) {
+			return this->inventory.remove(item, count);
+		}
+
+		/// @brief Give (i.e. add) an item to the inventory of the creature
+		///
+		/// @param item The item
+		/// @param count The number of said items
+		///
+		/// @return Whether the addition is successful
+		inline bool give(ItemType item, unsigned int count = 1) {
+			return this->inventory.add(item, count);
+		}
+
 };
 
 

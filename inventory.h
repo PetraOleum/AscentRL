@@ -4,13 +4,20 @@
 #include "general.h"
 #include <vector>
 
+/// @brief Link item and number of items
 using inventory_entry_t = std::pair<ItemType, unsigned int>;
 
 class Inventory {
 	private:
 
+		/// @brief The underlying array - 52 spots, a-z,A-Z.
 		inventory_entry_t inv[26*2];
 
+		/// @brief Translate char value to index
+		///
+		/// @param c The character
+		///
+		/// @return The index
 		inline int chartoindex(const char& c) const {
 			if (c >= 'a' && c <= 'z')
 				return c - 'a';
@@ -19,6 +26,11 @@ class Inventory {
 			return -1;
 		}
 
+		/// @brief Translate index to char value
+		///
+		/// @param i The index
+		///
+		/// @return The char
 		inline char indextochar(const int& i) const {
 			if (i < 0)
 				return '\0';
@@ -37,6 +49,9 @@ class Inventory {
 		Inventory& operator=(const Inventory& other);
 
 
+		/// @brief Calculate the total number of all items
+		///
+		/// @return The total number of all items
 		inline unsigned int total() const {
 			unsigned int c = 0;
 			for (int i = 0; i < 26 * 2; i++)
@@ -44,6 +59,11 @@ class Inventory {
 			return c;
 		}
 
+		/// @brief Calculate total number of specified item in inventory
+		///
+		/// @param item The item
+		///
+		/// @return The total number of that item
 		inline unsigned int total(ItemType item) const {
 			unsigned int c = 0;
 			for (int i = 0; i < 26 * 2; i++)
@@ -52,13 +72,44 @@ class Inventory {
 			return c;
 		}
 
+		/// @brief Whether the inventory contains an item
+		///
+		/// @param item The item
+		/// @param count (Optional) minumum number
+		///
+		/// @return True if the number of item is greater than minimum
 		inline bool has(ItemType item, unsigned int count = 1) const {
 			return total(item) >= count;
 		}
 
+		/// @brief Add an item to the inventory
+		///
+		/// @param item The item
+		/// @param count Count of the item
+		///
+		/// @return Whether it is successful
 		bool add(ItemType item, unsigned int count = 1);
 
+		/// @brief Remove an item from the inventory
+		///
+		/// @param item The item
+		/// @param count Number of the item
+		///
+		/// @return Whether it is successful
 		bool remove(ItemType item, unsigned int count = 1);
+
+		inline inventory_entry_t& operator[](char index) {
+			return inv[chartoindex(index)];
+		}
+
+		/// @brief Expose inventory array
+		///
+		/// @param index Index of the array (as a char)
+		///
+		/// @return Reference to the array object
+		inline const inventory_entry_t& operator[](char index) const {
+			return inv[chartoindex(index)];
+		}
 };
 
 
