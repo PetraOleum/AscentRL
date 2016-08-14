@@ -241,6 +241,9 @@ class Creature {
 			return this->properties.AC;
 		}
 
+		/// @brief Expose the team
+		///
+		/// @return Const reference to the team
 		inline const Team& creatureTeam() {
 			return team;
 		}
