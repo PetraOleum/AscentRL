@@ -1,5 +1,6 @@
 #include "ascentapp.h"
 #include <cstdio>
+#include <sstream>
 
 int AscentApp::OnExecute() {
 	if (!OnInit())
@@ -307,43 +308,59 @@ void AscentApp::renderForeground(Foreground foreground, int xsquare, int ysquare
 }
 
 void AscentApp::drawStatusBox() {
+	std::stringstream msgstringstream;
+	const Inventory& inventory = engine->getPlayerInventory();
+	if (inventory.total() > 0) {
+		msgstringstream << "Inventory:\n";
+		for (int i = 0; i < 26 * 2; i++) {
+			char c = INV_indextochar(i);
+			inventory_entry_t ientry = inventory[c];
+			if (ientry.second > 0) {
+				msgstringstream << c << " - " << itemProperties.at(ientry.first).name << " (" << ientry.second << ")\n";
+			}
+		}
+	} else {
+		msgstringstream << "Inventory Empty\n";
+	}
+
 	Foreground tb = engine->underWitch();
 	if (tb != Foreground::NONE) {
-//		printf("Here: %s\n", foreProps.at(tb).name);
-//		const char * msg = foreProps.at(tb).name;
-		std::string msgstring = engine->underItemString();
-//		msgstring += msg;
-		SDL_Surface* textSurface = TTF_RenderText_Blended(font, msgstring.c_str(), {0xFF, 0xFF, 0xFF, 0xFF});
-		if (textSurface == NULL) {
-			fprintf(stderr, "Couldn\'t make the text surface. %s\n", TTF_GetError());
-			return;
-		}
-		int message_w = textSurface->w;
-		int message_h = textSurface->h;
-		if (statusMessage != NULL)
-			SDL_DestroyTexture(statusMessage);
-		statusMessage = SDL_CreateTextureFromSurface(renderer, textSurface);
-		SDL_FreeSurface(textSurface);
-		if (statusMessage == NULL) {
-			fprintf(stderr, "Couldn\'t create the text texture. %s\n", SDL_GetError());
-			return;
-		}
-		SDL_Rect messageRect = {
-			MESSAGE_BORDER,
-			windowHeight - message_h - MESSAGE_BORDER,
-			message_w,
-			message_h
-		};
-		SDL_Rect messageBackgroundRect = {
-			0,
-			windowHeight - message_h - MESSAGE_BORDER * 2,
-			message_w + MESSAGE_BORDER * 2,
-			message_h + MESSAGE_BORDER * 2
-		};
-		SDL_SetRenderDrawColor(renderer, 0x00, 0x00, 0x00, 0xC0);
-		SDL_RenderFillRect(renderer, &messageBackgroundRect);
-		SDL_RenderCopy(renderer, statusMessage, NULL, &messageRect);
+		msgstringstream << engine->underItemString();
 	}
+
+	std::string msgstring = msgstringstream.str();
+	SDL_Surface* textSurface = TTF_RenderText_Blended_Wrapped(font, msgstring.c_str(), {0xFF, 0xFF, 0xFF, 0xFF}, windowWidth - MESSAGE_BORDER * 4);
+	if (textSurface == NULL) {
+		fprintf(stderr, "Couldn\'t make the text surface. %s\n", TTF_GetError());
+		return;
+	}
+	int message_w = textSurface->w;
+	int message_h = textSurface->h;
+	if (statusMessage != NULL)
+		SDL_DestroyTexture(statusMessage);
+	statusMessage = SDL_CreateTextureFromSurface(renderer, textSurface);
+	SDL_FreeSurface(textSurface);
+	if (statusMessage == NULL) {
+		fprintf(stderr, "Couldn\'t create the text texture. %s\n", SDL_GetError());
+		return;
+	}
+	SDL_Rect messageRect = {
+		MESSAGE_BORDER,
+		windowHeight - message_h - MESSAGE_BORDER,
+		message_w,
+		message_h
+	};
+	SDL_Rect messageBackgroundRect = {
+		0,
+		windowHeight - message_h - MESSAGE_BORDER * 2,
+//		message_w + MESSAGE_BORDER * 2,
+		windowWidth,
+		message_h + MESSAGE_BORDER * 2
+
+	};
+	SDL_SetRenderDrawColor(renderer, 0x00, 0x00, 0x00, 0xC0);
+	SDL_RenderFillRect(renderer, &messageBackgroundRect);
+	SDL_RenderCopy(renderer, statusMessage, NULL, &messageRect);
 }
 
 void AscentApp::renderHPLine(double HPPercentage, int xsquare, int ysquare) {

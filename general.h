@@ -56,6 +56,19 @@ enum class ItemType : uint8_t {
 	Chest
 };
 
+/// @brief Store item properties
+struct ItemProperties {
+	const char* name;
+};
+
+/// @brief Map item types to their properties
+const std::map<ItemType, ItemProperties> itemProperties = {
+	{ItemType::NONE, {"NONE"}},
+	{ItemType::Gold, {"Gold"}},
+	{ItemType::Staff, {"Staff"}},
+	{ItemType::Chest, {"Chest"}}
+};
+
 /// @brief Properties of a background
 struct BackgroundProperties {
 	bool passible;

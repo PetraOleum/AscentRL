@@ -207,6 +207,10 @@ class Engine {
 			return player->Properties();
 		}
 
+		inline const Inventory& getPlayerInventory() {
+			return player->getInventory();
+		}
+
 };
 
 #endif

@@ -7,39 +7,40 @@
 /// @brief Link item and number of items
 using inventory_entry_t = std::pair<ItemType, unsigned int>;
 
+/// @brief Translate char value to index
+///
+/// @param c The character
+///
+/// @return The index
+inline int INV_chartoindex(const char& c) {
+	if (c >= 'a' && c <= 'z')
+		return c - 'a';
+	if (c >= 'A' && c <= 'Z')
+		return c - 'A' + 26;
+	return -1;
+}
+
+/// @brief Translate index to char value
+///
+/// @param i The index
+///
+/// @return The char
+inline char INV_indextochar(const int& i) {
+	if (i < 0)
+		return '\0';
+	if (i < 26)
+		return 'a' + i;
+	if (i < 26 * 2)
+		return 'A' + (i - 26);
+	return '\0';
+}
+
 class Inventory {
 	private:
 
 		/// @brief The underlying array - 52 spots, a-z,A-Z.
 		inventory_entry_t inv[26*2];
 
-		/// @brief Translate char value to index
-		///
-		/// @param c The character
-		///
-		/// @return The index
-		inline int chartoindex(const char& c) const {
-			if (c >= 'a' && c <= 'z')
-				return c - 'a';
-			if (c >= 'A' && c <= 'Z')
-				return c - 'A' + 26;
-			return -1;
-		}
-
-		/// @brief Translate index to char value
-		///
-		/// @param i The index
-		///
-		/// @return The char
-		inline char indextochar(const int& i) const {
-			if (i < 0)
-				return '\0';
-			if (i < 26)
-				return 'a' + i;
-			if (i < 26 * 2)
-				return 'A' + (i - 26);
-			return '\0';
-		}
 
 	public:
 		Inventory();
@@ -99,7 +100,7 @@ class Inventory {
 		bool remove(ItemType item, unsigned int count = 1);
 
 		inline inventory_entry_t& operator[](char index) {
-			return inv[chartoindex(index)];
+			return inv[INV_chartoindex(index)];
 		}
 
 		/// @brief Expose inventory array
@@ -108,7 +109,7 @@ class Inventory {
 		///
 		/// @return Reference to the array object
 		inline const inventory_entry_t& operator[](char index) const {
-			return inv[chartoindex(index)];
+			return inv[INV_chartoindex(index)];
 		}
 };
 
