@@ -99,15 +99,20 @@ class Inventory {
 		/// @return Whether it is successful
 		bool remove(ItemType item, unsigned int count = 1);
 
+		/// @brief Expose inventory array (as non-const)
+		///
+		/// @param index Index of the array (as a char)
+		///
+		/// @return Reference te array object
 		inline inventory_entry_t& operator[](char index) {
 			return inv[INV_chartoindex(index)];
 		}
 
-		/// @brief Expose inventory array
+		/// @brief Expose inventory array (as const)
 		///
 		/// @param index Index of the array (as a char)
 		///
-		/// @return Reference to the array object
+		/// @return Const reference to the array object
 		inline const inventory_entry_t& operator[](char index) const {
 			return inv[INV_chartoindex(index)];
 		}

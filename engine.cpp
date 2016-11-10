@@ -14,6 +14,10 @@ Engine::Engine() {
 	
 	Region * StartRegion = new Region(10, 10, RoomType::Room);
 	player = new Creature({0, 0}, StartRegion, CreatureType::Witch, Team::Player);
+	player->give(ItemType::Gold, 1);
+	player->give(ItemType::NONE, 17);
+	player->give(ItemType::Staff);
+	player->give(ItemType::Gold, 20);
 	Creature * rat = new Creature({5, 5}, StartRegion, CreatureType::Rat);
 	StartRegion->putCreature(rat->getPosition(), rat);
 	creatures.push_back(rat);
@@ -443,6 +447,7 @@ void Engine::PopulateNewRegion(Region * region) {
 					if (probdist(randomengine) < 0.1)
 					{
 						Creature * cr = new Creature(Point(x, y), region, CreatureType::Rat);
+						cr->give(ItemType::Gold, 1);
 						region->putCreature(Point(x, y), cr);
 						creatures.push_back(cr);
 					}
