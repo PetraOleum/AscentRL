@@ -16,7 +16,8 @@
 #define INIT_SCREEN_WIDTH 500
 #define INIT_SCREEN_HEIGHT 500
 
-#define FONT_PATH "font/liberation-serif/LiberationSerif-Regular.ttf"
+//#define FONT_PATH "font/liberation-serif/LiberationSerif-Regular.ttf"
+#define FONT_PATH "font/liberation-mono/LiberationMono-Regular.ttf"
 
 #define FONT_POINT 16
 
