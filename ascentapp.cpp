@@ -65,7 +65,7 @@ bool AscentApp::OnInit() {
 void AscentApp::OnLoop() {
 
 	if (!plan.empty()) {
-		if (!engine->Act(plan.front().first, plan.front().second)) {
+		if (!engine->Act(plan.front())) {
 			while (!plan.empty())
 				plan.pop();
 		} else
@@ -129,7 +129,7 @@ void AscentApp::OnEvent(SDL_Event* event) {
 				std::queue<Direction> * moves = engine->playerAstar(Point(0,0), dest);
 				while (!moves->empty()) {
 //					printf("%d\n", (int)moves->front());
-					plan.push({ActionType::Move, moves->front()});
+					plan.push({ActionType::Move, moves->front(), '\0'});
 					moves->pop();
 				}
 				delete moves;
@@ -180,46 +180,45 @@ void AscentApp::onKeyDown(SDL_KeyboardEvent * keyEvent) {
 		case SDLK_LEFT:
 		case SDLK_h:
 		case SDLK_KP_4:
-			plan.push({ActionType::Move, Direction::Left});
+			plan.push({ActionType::Move, Direction::Left, '\0'});
 			break;
 		case SDLK_RIGHT:
 		case SDLK_l:
 		case SDLK_KP_6:
-			plan.push({ActionType::Move, Direction::Right});
+			plan.push({ActionType::Move, Direction::Right, '\0'});
 			break;
 		case SDLK_UP:
 		case SDLK_k:
 		case SDLK_KP_8:
-			plan.push({ActionType::Move, Direction::Up});
+			plan.push({ActionType::Move, Direction::Up, '\0'});
 			break;
 		case SDLK_DOWN:
 		case SDLK_j:
 		case SDLK_KP_2:
-			plan.push({ActionType::Move, Direction::Down});
+			plan.push({ActionType::Move, Direction::Down, '\0'});
 			break;
 		case SDLK_y:
 		case SDLK_KP_7:
-			plan.push({ActionType::Move, Direction::UpLeft});
+			plan.push({ActionType::Move, Direction::UpLeft, '\0'});
 			break;
 		case SDLK_u:
 		case SDLK_KP_9:
-			plan.push({ActionType::Move, Direction::UpRight});
+			plan.push({ActionType::Move, Direction::UpRight, '\0'});
 			break;
 		case SDLK_b:
 		case SDLK_KP_1:
-			plan.push({ActionType::Move, Direction::DownLeft});
+			plan.push({ActionType::Move, Direction::DownLeft, '\0'});
 			break;
 		case SDLK_n:
 		case SDLK_KP_3:
-			plan.push({ActionType::Move, Direction::DownRight});
+			plan.push({ActionType::Move, Direction::DownRight, '\0'});
 			break;
 		case SDLK_KP_5:
 		case SDLK_PERIOD:
-//			engine->doMonsterTurns();
-			plan.push({ActionType::NONE, Direction::NONE});
+			plan.push({ActionType::NONE, Direction::NONE, '\0'});
 			break;
 		case SDLK_g:
-			plan.push({ActionType::Pickup, Direction::NONE});
+			plan.push({ActionType::Pickup, Direction::NONE, '\0'});
 			break;
 		default:
 			break;

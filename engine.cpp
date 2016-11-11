@@ -107,20 +107,20 @@ double Engine::creatureHPPercentHere(Point point) {
 //	return true;
 //}
 
-bool Engine::Act(ActionType action, Direction direction) {
-	switch (action) {
+bool Engine::Act(Action action) {
+	switch (action.type) {
 		case ActionType::Move:
-			if (!monsterMove(player, direction))
+			if (!monsterMove(player, action.direction))
 				return false;
 			break;
 		case ActionType::Pickup:
-			if (direction != Direction::NONE)
+			if (action.direction != Direction::NONE)
 				return false;
 			if (!monsterPickUp(player))
 				return false;
 			break;
 		case ActionType::Attack:
-			if (!monsterAttack(player, direction))
+			if (!monsterAttack(player, action.direction))
 				return false;
 			break;
 		case ActionType::Drop:
@@ -128,7 +128,7 @@ bool Engine::Act(ActionType action, Direction direction) {
 		case ActionType::NONE:
 			break;
 		default:
-			fprintf(stderr, "Attempted to make a non-implemented action of val %d:%d\n", (int)action, (int)direction);
+			fprintf(stderr, "Attempted to make a non-implemented action of val %d:%d\n", (int)action.type, (int)action.direction);
 			return false;
 	};
 

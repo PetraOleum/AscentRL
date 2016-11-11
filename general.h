@@ -316,5 +316,15 @@ struct Visibility {
 	double creatureHP;
 };
 
+/// @brief All the information about an action
+struct Action {
+	/// @brief The type of action
+	ActionType type;
+	/// @brief The direction
+	Direction direction;
+	/// @brief The item in the inventory
+	char inventoryItem;
+};
+
 
 #endif

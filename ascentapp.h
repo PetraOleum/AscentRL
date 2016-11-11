@@ -179,7 +179,7 @@ class AscentApp {
 		/* Controls stuff */
 
 		/// @brief Planned moves
-		std::queue<std::pair<ActionType, Direction>> plan;
+		std::queue<Action> plan;
 
 	public:
 		/// @brief Constructor

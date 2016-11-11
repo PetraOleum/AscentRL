@@ -134,7 +134,7 @@ class Engine {
 		/// @param direction The (8-way) direction to move in (default=none)
 		///
 		/// @return Success/fail
-		bool Act(ActionType action, Direction direction = Direction::NONE);
+		bool Act(Action action);
 
 		/// @brief Expose currentPosition
 		///
@@ -190,7 +190,7 @@ class Engine {
 		/// @return Success/fail
 		bool monsterMove(Creature * creature, Direction direction);
 
-		/// @brief Get creature to pic up thing underneath them
+		/// @brief Get creature to pick up thing underneath them
 		///
 		/// @param creature The creature
 		///
