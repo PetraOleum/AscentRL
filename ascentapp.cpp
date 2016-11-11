@@ -65,7 +65,7 @@ bool AscentApp::OnInit() {
 void AscentApp::OnLoop() {
 
 	if (!plan.empty()) {
-		if (!engine->Move(plan.front())) {
+		if (!engine->Act(ActionType::Move, plan.front())) {
 			while (!plan.empty())
 				plan.pop();
 		} else

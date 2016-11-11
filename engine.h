@@ -90,6 +90,8 @@ class Engine {
 		/// @param region The region
 		void PopulateNewRegion(Region * region);
 
+//		bool Move(Direction direction);
+
 	public:
 		/// @brief Constructor
 		Engine();
@@ -126,12 +128,13 @@ class Engine {
 		/// @return The HP fraction
 		double creatureHPPercentHere(Point point);
 
-		/// @brief Move in a direction
+		/// @brief Act
 		///
-		/// @param direction The (8-way) direction to move in
+		/// @param action The type of action to take
+		/// @param direction The (8-way) direction to move in (default=none)
 		///
 		/// @return Success/fail
-		bool Move(Direction direction);
+		bool Act(ActionType action, Direction direction = Direction::NONE);
 
 		/// @brief Expose currentPosition
 		///

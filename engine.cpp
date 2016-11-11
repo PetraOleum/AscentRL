@@ -99,11 +99,34 @@ double Engine::creatureHPPercentHere(Point point) {
 
 }
 
-bool Engine::Move(Direction direction) {
-	if (!monsterMove(player, direction))
-		return false;
-	doMonsterTurns();
+//bool Engine::Move(Direction direction) {
+//	if (!monsterMove(player, direction))
+//		return false;
+//	doMonsterTurns();
+//
+//	return true;
+//}
 
+bool Engine::Act(ActionType action, Direction direction) {
+	switch (action) {
+		case ActionType::Move:
+			if (!monsterMove(player, direction))
+				return false;
+			break;
+		case ActionType::Pickup:
+			break;
+		case ActionType::Attack:
+			break;
+		case ActionType::Drop:
+			break;
+		case ActionType::NONE:
+			break;
+		default:
+			fprintf(stderr, "Attempted to make a non-implemented action of val %d:%d\n", (int)action, (int)direction);
+			return false;
+	};
+
+	doMonsterTurns();
 	return true;
 }
 

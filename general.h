@@ -113,6 +113,15 @@ enum class Direction : uint8_t {
 	NONE
 };
 
+/// @brief Enum to hold direction types
+enum class ActionType : uint8_t {
+	Move,
+	Attack,
+	Pickup,
+	Drop,
+	NONE
+};
+
 /// @brief Get the "oppisite" direction to the one provided
 ///
 /// @param direction A direction
