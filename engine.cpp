@@ -124,6 +124,10 @@ bool Engine::Act(Action action) {
 				return false;
 			break;
 		case ActionType::Drop:
+			if (action.direction != Direction::NONE)
+				return false;
+			if (!monsterDrop(player, action.inventoryItem))
+				return false;
 			break;
 		case ActionType::NONE:
 			break;
@@ -520,6 +524,19 @@ bool Engine::monsterPickUp(Creature * creature) {
 	}
 
 	
+
+	return true;
+}
+
+bool Engine::monsterDrop(Creature * creature, char invindex) {
+	Region * cregion = creature->getRegion();
+	Point cpos = creature->getPosition();
+	if (!bkgrProps.at(cregion->getBackground(cpos)).placeable)
+		return false; //Can't drop here
+	ItemType iType = creature->getInventory()[invindex].first;
+	if (!creature->take(iType))
+		return false; //Failed to get this item from the inventory
+	cregion->placeItem(cpos, iType);
 
 	return true;
 }

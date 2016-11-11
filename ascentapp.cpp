@@ -59,6 +59,7 @@ bool AscentApp::OnInit() {
 	if (Init_Foreground() == false)
 		return false;
 	running = true;
+	currentlyDisplaying = windowType::Map;
 	return true;
 }
 
@@ -77,38 +78,19 @@ void AscentApp::OnRender() {
 	updateWinParameters();
 	SDL_SetRenderDrawColor(renderer, 0x00, 0x00, 0x00, 0xFF);
 	SDL_RenderClear(renderer);
-	for (int x = 0; x < numSquaresX; x++)
-		for (int y = 0; y < numSquaresY; y++) {
-			Point corP = Point(x - numSquaresX / 2, y - numSquaresY / 2);
-			renderBackground(engine->getBackground(corP), x, y);
-			renderForeground(engine->getForeground(corP), x, y);
-			if (engine->seeCreatureHere(corP))
-				renderHPLine(engine->creatureHPPercentHere(corP), x, y);
-		}
-	if (mouseInSquares) {
-		SDL_SetRenderDrawColor(renderer, 0x00, 0x00, 0xFF, 0xFF);
-		int qss = SQUARE_SIZE / 4;
-		int tqss = (SQUARE_SIZE * 3) / 4;
-		int xos = xOfSquare(mouseSquareX);
-		int yos = yOfSquare(mouseSquareY);
-		SDL_RenderDrawLine(renderer, xos,
-				yos + qss,
-				xos,
-				yos + tqss);
-		SDL_RenderDrawLine(renderer, xos + SQUARE_SIZE - 1,
-				yos + qss,
-				xos + SQUARE_SIZE - 1,
-				yos + tqss);
-		SDL_RenderDrawLine(renderer, xos + qss,
-				yos,
-				xos + tqss,
-				yos);
-		SDL_RenderDrawLine(renderer, xos + qss,
-				yos + SQUARE_SIZE - 1,
-				xos + tqss,
-				yos + SQUARE_SIZE - 1);
+
+	switch (currentlyDisplaying) {
+		case windowType::Map:
+			MapRender();
+			break;
+		case windowType::Inventory:
+			InventoryRender();
+			break;
+		default:
+			fprintf(stderr, "Nonimplemented window type %d", (int)currentlyDisplaying);
+			break;
 	}
-	drawStatusBox();
+
 	SDL_RenderPresent(renderer);
 }
 
@@ -220,6 +202,12 @@ void AscentApp::onKeyDown(SDL_KeyboardEvent * keyEvent) {
 		case SDLK_g:
 			plan.push({ActionType::Pickup, Direction::NONE, '\0'});
 			break;
+		case SDLK_d:
+			plan.push({ActionType::Drop, Direction::NONE, 'a'}); //Temporary implementation
+			break;
+		case SDLK_i:
+			currentlyDisplaying = ((currentlyDisplaying == windowType::Map) ? windowType::Inventory : windowType::Map);
+			break;
 		default:
 			break;
 	}
@@ -312,26 +300,29 @@ void AscentApp::renderForeground(Foreground foreground, int xsquare, int ysquare
 
 void AscentApp::drawStatusBox() {
 	std::stringstream msgstringstream;
-	const Inventory& inventory = engine->getPlayerInventory();
-	if (inventory.total() > 0) {
-		msgstringstream << "Inventory:\n";
-		for (int i = 0; i < 26 * 2; i++) {
-			char c = INV_indextochar(i);
-			inventory_entry_t ientry = inventory[c];
-			if (ientry.second > 0) {
-				msgstringstream << c << " - " << itemProperties.at(ientry.first).name << " (" << ientry.second << ")\n";
-			}
-		}
-	} else {
-		msgstringstream << "Inventory Empty\n";
-	}
+//	const Inventory& inventory = engine->getPlayerInventory();
+//	if (inventory.total() > 0) {
+//		msgstringstream << "Inventory:\n";
+//		for (int i = 0; i < 26 * 2; i++) {
+//			char c = INV_indextochar(i);
+//			inventory_entry_t ientry = inventory[c];
+//			if (ientry.second > 0) {
+//				msgstringstream << c << " - " << itemProperties.at(ientry.first).name << " (" << ientry.second << ")\n";
+//			}
+//		}
+//	} else {
+//		msgstringstream << "Inventory Empty\n";
+//	}
 
 	Foreground tb = engine->underWitch();
 	if (tb != Foreground::NONE) {
 		msgstringstream << engine->underItemString();
-	}
+	} 
 
 	std::string msgstring = msgstringstream.str();
+
+	if (msgstring.length() == 0)
+		return;
 	SDL_Surface* textSurface = TTF_RenderText_Blended_Wrapped(font, msgstring.c_str(), {0xFF, 0xFF, 0xFF, 0xFF}, windowWidth - MESSAGE_BORDER * 4);
 	if (textSurface == NULL) {
 		fprintf(stderr, "Couldn\'t make the text surface. %s\n", TTF_GetError());
@@ -403,4 +394,79 @@ void AscentApp::renderHPLine(double HPPercentage, int xsquare, int ysquare) {
 //			yos,
 //			xos + SQUARE_SIZE - 1,
 //			yos);
+}
+
+void AscentApp::MapRender() {
+	for (int x = 0; x < numSquaresX; x++)
+		for (int y = 0; y < numSquaresY; y++) {
+			Point corP = Point(x - numSquaresX / 2, y - numSquaresY / 2);
+			renderBackground(engine->getBackground(corP), x, y);
+			renderForeground(engine->getForeground(corP), x, y);
+			if (engine->seeCreatureHere(corP))
+				renderHPLine(engine->creatureHPPercentHere(corP), x, y);
+		}
+	if (mouseInSquares) {
+		SDL_SetRenderDrawColor(renderer, 0x00, 0x00, 0xFF, 0xFF);
+		int qss = SQUARE_SIZE / 4;
+		int tqss = (SQUARE_SIZE * 3) / 4;
+		int xos = xOfSquare(mouseSquareX);
+		int yos = yOfSquare(mouseSquareY);
+		SDL_RenderDrawLine(renderer, xos,
+				yos + qss,
+				xos,
+				yos + tqss);
+		SDL_RenderDrawLine(renderer, xos + SQUARE_SIZE - 1,
+				yos + qss,
+				xos + SQUARE_SIZE - 1,
+				yos + tqss);
+		SDL_RenderDrawLine(renderer, xos + qss,
+				yos,
+				xos + tqss,
+				yos);
+		SDL_RenderDrawLine(renderer, xos + qss,
+				yos + SQUARE_SIZE - 1,
+				xos + tqss,
+				yos + SQUARE_SIZE - 1);
+	}
+	drawStatusBox();
+}
+
+void AscentApp::InventoryRender() {
+	std::stringstream invstream;
+	const Inventory& inventory = engine->getPlayerInventory();
+	if (inventory.total() > 0) {
+		invstream << "Inventory: (Esc to cancel)\n";
+		for (int i = 0; i < 26 * 2; i++) {
+			char c = INV_indextochar(i);
+			inventory_entry_t ientry = inventory[c];
+			if (ientry.second > 0) {
+				invstream << c << " - " << itemProperties.at(ientry.first).name << " (" << ientry.second << ")\n";
+			}
+		}
+	} else {
+		invstream << "Inventory Empty\nPress Esc";
+	}
+	std::string invstring = invstream.str();
+	SDL_Surface* textSurface = TTF_RenderText_Blended_Wrapped(font, invstring.c_str(), {0xFF, 0xFF, 0xFF, 0xFF}, windowWidth - MESSAGE_BORDER * 4);
+	if (textSurface == NULL) {
+		fprintf(stderr, "Couldn\'t make the text surface. %s\n", TTF_GetError());
+		return;
+	}
+	int message_w = textSurface->w;
+	int message_h = textSurface->h;
+	if (statusMessage != NULL)
+		SDL_DestroyTexture(statusMessage);
+	statusMessage = SDL_CreateTextureFromSurface(renderer, textSurface);
+	SDL_FreeSurface(textSurface);
+	if (statusMessage == NULL) {
+		fprintf(stderr, "Couldn\'t create the text texture. %s\n", SDL_GetError());
+		return;
+	}
+	SDL_Rect messageRect = {
+		MESSAGE_BORDER,
+		MESSAGE_BORDER,
+		message_w,
+		message_h
+	};
+	SDL_RenderCopy(renderer, statusMessage, NULL, &messageRect);
 }

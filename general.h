@@ -73,17 +73,18 @@ const std::map<ItemType, ItemProperties> itemProperties = {
 struct BackgroundProperties {
 	bool passible;
 	bool transparent;
+	bool placeable;
 };
 
 /// @brief Holds the properties of a background
 const std::map<Background, BackgroundProperties> bkgrProps = {
-	{Background::EMPTYNESS, {false, false}},
-	{Background::TiledFloor, {true, true}},
-	{Background::DirtWall, {false, false}},
-	{Background::StoneWall, {false, false}},
-	{Background::Door, {true, false}},
-	{Background::MarkedDoor, {true, false}},
-	{Background::TOTAL, {false, false}}
+	{Background::EMPTYNESS, {false, false, false}},
+	{Background::TiledFloor, {true, true, true}},
+	{Background::DirtWall, {false, false, false}},
+	{Background::StoneWall, {false, false, false}},
+	{Background::Door, {true, false, false}},
+	{Background::MarkedDoor, {true, false, false}},
+	{Background::TOTAL, {false, false, false}}
 };
 
 struct ForegroundProperties {

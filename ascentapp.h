@@ -28,6 +28,11 @@
 /// @brief The app class
 class AscentApp {
 	private:
+		enum class windowType : uint8_t {
+			Map,
+			Inventory
+		} currentlyDisplaying;
+
 		/// @brief Pointer to the engine
 		Engine* engine = NULL;
 
@@ -215,6 +220,13 @@ class AscentApp {
 
 		/// @brief Cleanup code at finish
 		void OnCleanup();
+
+
+		/// @brief Rendering code for rendering the map
+		void MapRender();
+
+		/// @brief Rendering code for the inventory
+		void InventoryRender();
 };
 
 #endif

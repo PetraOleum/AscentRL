@@ -197,6 +197,14 @@ class Engine {
 		/// @return Success/fail
 		bool monsterPickUp(Creature * creature);
 
+		/// @brief Drop an item from the specified inventory slot
+		///
+		/// @param creature The creature
+		/// @param invindex The inventory index (as a char)
+		///
+		/// @return Success/fail
+		bool monsterDrop(Creature * creature, char invindex);
+
 		/// @brief Attack with a specific monster, but don't move - fail if no monster to attack
 		///
 		/// @param creature The creature attacking
