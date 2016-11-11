@@ -190,6 +190,21 @@ class Engine {
 		/// @return Success/fail
 		bool monsterMove(Creature * creature, Direction direction);
 
+		/// @brief Get creature to pic up thing underneath them
+		///
+		/// @param creature The creature
+		///
+		/// @return Success/fail
+		bool monsterPickUp(Creature * creature);
+
+		/// @brief Attack with a specific monster, but don't move - fail if no monster to attack
+		///
+		/// @param creature The creature attacking
+		/// @param direction The direction to attack in
+		///
+		/// @return Success/fail
+		bool monsterAttack(Creature * creature, Direction direction);
+
 		void ReportState();
 
 		/// @brief Handle one creature attacking another

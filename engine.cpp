@@ -114,8 +114,14 @@ bool Engine::Act(ActionType action, Direction direction) {
 				return false;
 			break;
 		case ActionType::Pickup:
+			if (direction != Direction::NONE)
+				return false;
+			if (!monsterPickUp(player))
+				return false;
 			break;
 		case ActionType::Attack:
+			if (!monsterAttack(player, direction))
+				return false;
 			break;
 		case ActionType::Drop:
 			break;
@@ -425,6 +431,29 @@ bool Engine::monsterMove(Creature * creature, Direction direction) {
 
 }
 
+bool Engine::monsterAttack(Creature * creature, Direction direction) {
+	Region * cRegion = creature->getRegion();
+	manageAltRegion(cRegion, creature->getPosition());
+	Point np = DISPLACEMENT(direction);
+	Point originalPosition = creature->getPosition();
+	auto nbaf = relBaF(np, originalPosition, cRegion);
+	if (nbaf.creatureHere != CreatureType::NONE) {
+		Creature * defender = cRegion->getCreature(PAIR_SUM(np, originalPosition));
+		if (defender == NULL) {
+			//Must be across a region boundary
+			Connection cn = cRegion->connectionAt(originalPosition);
+			if (cn.to == NULL) //Something funny
+				return false;
+			defender = cn.to->getCreature(PAIR_SUM(cn.toLocation, np));
+			if (defender == NULL)
+				return false;
+		}
+		handleAttack(creature, defender);
+		return true;
+	}
+	return false;
+}
+
 void Engine::ReportState() {
 //	for (Region * region : regions)
 //		printf("Region:\n%s\n", region->ToString(false).c_str());
@@ -477,4 +506,20 @@ void Engine::PopulateNewRegion(Region * region) {
 			
 			}
 		}
+}
+
+bool Engine::monsterPickUp(Creature * creature) {
+	Region * cregion = creature->getRegion();
+	Point cpos = creature->getPosition();
+	ItemType topitem = cregion->takeItem(cpos);
+	if (topitem == ItemType::NONE)
+		return false; //Nothing there
+	if (!player->give(topitem)) {
+		cregion->placeItem(cpos, topitem); //Put it back
+		return false; //Arguably should be true - depending on whether it takes an action or not
+	}
+
+	
+
+	return true;
 }
