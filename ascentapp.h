@@ -28,14 +28,22 @@
 /// @brief The app class
 class AscentApp {
 	private:
+		/// @brief The type of window to be rendered
 		enum class windowType : uint8_t {
+			/// @brief Show the game map
 			Map,
+			/// @brief Show the inventory
 			Inventory
 		} currentlyDisplaying;
 
+		/// @brief The input type taken
 		enum class InputType : uint8_t {
+			/// @brief Standard navigation on the map
 			Standard,
-			InventoryItemToDrop
+			/// @brief Select an inventory item to drop
+			InventoryItemToDrop,
+			/// @brief Select an inventory item to view (not implemented)
+			InventoryItemToView
 		} userInputRequested;
 
 		/// @brief Pointer to the engine

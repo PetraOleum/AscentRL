@@ -112,11 +112,18 @@ void AscentApp::OnEvent(SDL_Event* event) {
 			running = false;
 			break;
 		case SDL_KEYDOWN:
-			if (userInputRequested == InputType::Standard)
-				onKeyDown_Standard(&event->key);
-			else if (userInputRequested == InputType::InventoryItemToDrop)
-				onKeyDown_Inventory(&event->key);
-			break;
+			switch (userInputRequested) {
+				case InputType::Standard:
+					onKeyDown_Standard(&event->key);
+					break;
+				case InputType::InventoryItemToDrop:
+				case InputType::InventoryItemToView:
+					onKeyDown_Inventory(&event->key);
+					break;
+				default:
+					fprintf(stderr, "Non-implemented InputType\n");
+					break;
+			}
 		case SDL_MOUSEBUTTONDOWN:
 			if (mouseInSquares && event->button.button == SDL_BUTTON_LEFT && userInputRequested == InputType::Standard) {
 				Point dest = {
@@ -207,8 +214,9 @@ void AscentApp::onKeyDown_Standard(SDL_KeyboardEvent * keyEvent) {
 			currentlyDisplaying = windowType::Inventory;
 			userInputRequested = InputType::InventoryItemToDrop;
 			break;
-		case SDLK_i:
-//			currentlyDisplaying = ((currentlyDisplaying == windowType::Map) ? windowType::Inventory : windowType::Map);
+		case SDLK_i: // Viewing inventory only partially inplemented
+			currentlyDisplaying = windowType::Inventory;
+			userInputRequested = InputType::InventoryItemToView;
 			break;
 		default:
 			break;
@@ -314,6 +322,9 @@ void AscentApp::drawStatusBox() {
 			break;
 		case InputType::InventoryItemToDrop:
 			msgstringstream << "Select an item to drop (a-zA-Z); Esc to cancel\n";
+			break;
+		case InputType::InventoryItemToView:
+			msgstringstream << "Select an item to view (Not implemented); Esc to cancel\n";
 			break;
 		default:
 			return;
@@ -472,14 +483,13 @@ void AscentApp::InventoryRender() {
 }
 
 void AscentApp::onKeyDown_Inventory(SDL_KeyboardEvent * keyEvent) {
-
 	// If is an alphanumeric char, use
 	char anchar = getalphanumeric(keyEvent);
 	if (anchar != '\0') 
 		if (userInputRequested == InputType::InventoryItemToDrop) {
 			dropItem(anchar);
 			return;
-		}
+		} // When implementing InventoryItemToView, need something here
 	
 	// Other key input types
 	switch (keyEvent->keysym.sym) {
