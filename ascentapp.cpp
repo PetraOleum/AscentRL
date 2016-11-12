@@ -2,6 +2,11 @@
 #include <cstdio>
 #include <sstream>
 
+/// @brief Extract the alfanumeric from a SDL_KeyboardEvent
+///
+/// @param keyEvent The key event
+///
+/// @return a-zA-Z0-9, or '\0' if not one of those
 char getalphanumeric(SDL_KeyboardEvent * keyEvent);
 
 int AscentApp::OnExecute() {
