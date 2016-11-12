@@ -33,6 +33,11 @@ class AscentApp {
 			Inventory
 		} currentlyDisplaying;
 
+		enum class InputType : uint8_t {
+			Standard,
+			InventoryItemToDrop
+		} userInputRequested;
+
 		/// @brief Pointer to the engine
 		Engine* engine = NULL;
 
@@ -57,8 +62,14 @@ class AscentApp {
 		/// @brief Handle a key down
 		///
 		/// @param keyEvent The event data
-		void onKeyDown(SDL_KeyboardEvent * keyEvent);
+		void onKeyDown_Standard(SDL_KeyboardEvent * keyEvent);
 
+		/// @brief Handle a key down in the inventory
+		///
+		/// @param keyEvent The event data
+		void onKeyDown_Inventory(SDL_KeyboardEvent * keyEvent);
+
+		/// @brief Draw the status box on the bottom lines
 		void drawStatusBox();
 
 		/* Translating between pixels on the screen and squares */
@@ -185,6 +196,12 @@ class AscentApp {
 
 		/// @brief Planned moves
 		std::queue<Action> plan;
+
+		inline void dropItem(char item) {
+			plan.push({ActionType::Drop, Direction::NONE, item});
+			currentlyDisplaying = windowType::Map;
+			userInputRequested = InputType::Standard;
+		}
 
 	public:
 		/// @brief Constructor

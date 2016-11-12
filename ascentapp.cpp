@@ -2,6 +2,8 @@
 #include <cstdio>
 #include <sstream>
 
+char getalphanumeric(SDL_KeyboardEvent * keyEvent);
+
 int AscentApp::OnExecute() {
 	if (!OnInit())
 		return -1;
@@ -60,6 +62,7 @@ bool AscentApp::OnInit() {
 		return false;
 	running = true;
 	currentlyDisplaying = windowType::Map;
+	userInputRequested = InputType::Standard;
 	return true;
 }
 
@@ -91,6 +94,7 @@ void AscentApp::OnRender() {
 			break;
 	}
 
+	drawStatusBox();
 	SDL_RenderPresent(renderer);
 }
 
@@ -100,10 +104,13 @@ void AscentApp::OnEvent(SDL_Event* event) {
 			running = false;
 			break;
 		case SDL_KEYDOWN:
-			onKeyDown(&event->key);
+			if (userInputRequested == InputType::Standard)
+				onKeyDown_Standard(&event->key);
+			else if (userInputRequested == InputType::InventoryItemToDrop)
+				onKeyDown_Inventory(&event->key);
 			break;
 		case SDL_MOUSEBUTTONDOWN:
-			if (mouseInSquares && event->button.button == SDL_BUTTON_LEFT) {
+			if (mouseInSquares && event->button.button == SDL_BUTTON_LEFT && userInputRequested == InputType::Standard) {
 				Point dest = {
 					mouseSquareX - numSquaresX / 2,
 					mouseSquareY - numSquaresY / 2
@@ -136,7 +143,7 @@ void AscentApp::OnCleanup() {
 	SDL_Quit();
 }
 
-void AscentApp::onKeyDown(SDL_KeyboardEvent * keyEvent) {
+void AscentApp::onKeyDown_Standard(SDL_KeyboardEvent * keyEvent) {
 	switch (keyEvent->keysym.sym) {
 		case SDLK_F11:
 			if (fullscreen) {
@@ -203,10 +210,12 @@ void AscentApp::onKeyDown(SDL_KeyboardEvent * keyEvent) {
 			plan.push({ActionType::Pickup, Direction::NONE, '\0'});
 			break;
 		case SDLK_d:
-			plan.push({ActionType::Drop, Direction::NONE, 'a'}); //Temporary implementation
+//			plan.push({ActionType::Drop, Direction::NONE, 'a'}); //Temporary implementation
+			currentlyDisplaying = windowType::Inventory;
+			userInputRequested = InputType::InventoryItemToDrop;
 			break;
 		case SDLK_i:
-			currentlyDisplaying = ((currentlyDisplaying == windowType::Map) ? windowType::Inventory : windowType::Map);
+//			currentlyDisplaying = ((currentlyDisplaying == windowType::Map) ? windowType::Inventory : windowType::Map);
 			break;
 		default:
 			break;
@@ -300,24 +309,23 @@ void AscentApp::renderForeground(Foreground foreground, int xsquare, int ysquare
 
 void AscentApp::drawStatusBox() {
 	std::stringstream msgstringstream;
-//	const Inventory& inventory = engine->getPlayerInventory();
-//	if (inventory.total() > 0) {
-//		msgstringstream << "Inventory:\n";
-//		for (int i = 0; i < 26 * 2; i++) {
-//			char c = INV_indextochar(i);
-//			inventory_entry_t ientry = inventory[c];
-//			if (ientry.second > 0) {
-//				msgstringstream << c << " - " << itemProperties.at(ientry.first).name << " (" << ientry.second << ")\n";
-//			}
-//		}
-//	} else {
-//		msgstringstream << "Inventory Empty\n";
-//	}
 
-	Foreground tb = engine->underWitch();
-	if (tb != Foreground::NONE) {
-		msgstringstream << engine->underItemString();
-	} 
+	switch (userInputRequested) {
+		case InputType::Standard: 
+			{
+				Foreground tb = engine->underWitch();
+				if (tb != Foreground::NONE) {
+					msgstringstream << engine->underItemString();
+				} 
+			}
+			break;
+		case InputType::InventoryItemToDrop:
+			msgstringstream << "Select an item to drop (a-zA-Z); Esc to cancel\n";
+			break;
+		default:
+			return;
+	}
+
 
 	std::string msgstring = msgstringstream.str();
 
@@ -428,14 +436,13 @@ void AscentApp::MapRender() {
 				xos + tqss,
 				yos + SQUARE_SIZE - 1);
 	}
-	drawStatusBox();
 }
 
 void AscentApp::InventoryRender() {
 	std::stringstream invstream;
 	const Inventory& inventory = engine->getPlayerInventory();
 	if (inventory.total() > 0) {
-		invstream << "Inventory: (Esc to cancel)\n";
+		invstream << "Inventory:\n";
 		for (int i = 0; i < 26 * 2; i++) {
 			char c = INV_indextochar(i);
 			inventory_entry_t ientry = inventory[c];
@@ -469,4 +476,234 @@ void AscentApp::InventoryRender() {
 		message_h
 	};
 	SDL_RenderCopy(renderer, statusMessage, NULL, &messageRect);
+}
+
+void AscentApp::onKeyDown_Inventory(SDL_KeyboardEvent * keyEvent) {
+
+	// If is an alphanumeric char, use
+	char anchar = getalphanumeric(keyEvent);
+	if (anchar != '\0') 
+		if (userInputRequested == InputType::InventoryItemToDrop) {
+			dropItem(anchar);
+			return;
+		}
+	
+	// Other key input types
+	switch (keyEvent->keysym.sym) {
+		case SDLK_F11:
+			if (fullscreen) {
+				SDL_SetWindowFullscreen(
+						window, 
+						0);
+				fullscreen = false;
+			} else {
+				SDL_SetWindowFullscreen(
+						window, 
+						SDL_WINDOW_FULLSCREEN_DESKTOP);
+				fullscreen = true;
+			}
+			break;
+		case SDLK_ESCAPE:
+			currentlyDisplaying = windowType::Map;
+			userInputRequested = InputType::Standard;
+			break;
+		default:
+			break;
+	}
+}
+
+char getalphanumeric(SDL_KeyboardEvent * keyEvent) {
+
+	bool shifted = (keyEvent->keysym.mod & KMOD_SHIFT) ^ (keyEvent->keysym.mod & KMOD_CAPS);
+
+	switch (keyEvent->keysym.sym) {
+		case SDLK_0:
+		case SDLK_KP_0:
+			return '0';
+		case SDLK_1:
+		case SDLK_KP_1:
+			return '1';
+		case SDLK_2:
+		case SDLK_KP_2:
+			return '2';
+		case SDLK_3:
+		case SDLK_KP_3:
+			return '3';
+		case SDLK_4:
+		case SDLK_KP_4:
+			return '4';
+		case SDLK_5:
+		case SDLK_KP_5:
+			return '5';
+		case SDLK_6:
+		case SDLK_KP_6:
+			return '6';
+		case SDLK_7:
+		case SDLK_KP_7:
+			return '7';
+		case SDLK_8:
+		case SDLK_KP_8:
+			return '8';
+		case SDLK_9:
+		case SDLK_KP_9:
+			return '9';
+		case SDLK_a:
+			if (shifted)
+				return 'A';
+			else
+				return 'a';
+		case SDLK_b:
+			if (shifted)
+				return 'B';
+			else
+				return 'b';
+			break;
+		case SDLK_c:
+			if (shifted)
+				return 'C';
+			else
+				return 'c';
+			break;
+		case SDLK_d:
+			if (shifted)
+				return 'D';
+			else
+				return 'd';
+			break;
+		case SDLK_e:
+			if (shifted)
+				return 'E';
+			else
+				return 'e';
+			break;
+		case SDLK_f:
+			if (shifted)
+				return 'F';
+			else
+				return 'f';
+			break;
+		case SDLK_g:
+			if (shifted)
+				return 'G';
+			else
+				return 'g';
+			break;
+		case SDLK_h:
+			if (shifted)
+				return 'H';
+			else
+				return 'h';
+			break;
+		case SDLK_i:
+			if (shifted)
+				return 'I';
+			else
+				return 'i';
+			break;
+		case SDLK_j:
+			if (shifted)
+				return 'J';
+			else
+				return 'j';
+			break;
+		case SDLK_k:
+			if (shifted)
+				return 'K';
+			else
+				return 'k';
+			break;
+		case SDLK_l:
+			if (shifted)
+				return 'L';
+			else
+				return 'l';
+			break;
+		case SDLK_m:
+			if (shifted)
+				return 'M';
+			else
+				return 'm';
+			break;
+		case SDLK_n:
+			if (shifted)
+				return 'N';
+			else
+				return 'n';
+			break;
+		case SDLK_o:
+			if (shifted)
+				return 'O';
+			else
+				return 'o';
+			break;
+		case SDLK_p:
+			if (shifted)
+				return 'P';
+			else
+				return 'p';
+			break;
+		case SDLK_q:
+			if (shifted)
+				return 'Q';
+			else
+				return 'q';
+			break;
+		case SDLK_r:
+			if (shifted)
+				return 'R';
+			else
+				return 'r';
+			break;
+		case SDLK_s:
+			if (shifted)
+				return 'S';
+			else
+				return 's';
+			break;
+		case SDLK_t:
+			if (shifted)
+				return 'T';
+			else
+				return 't';
+			break;
+		case SDLK_u:
+			if (shifted)
+				return 'U';
+			else
+				return 'u';
+			break;
+		case SDLK_v:
+			if (shifted)
+				return 'V';
+			else
+				return 'v';
+			break;
+		case SDLK_w:
+			if (shifted)
+				return 'W';
+			else
+				return 'w';
+			break;
+		case SDLK_x:
+			if (shifted)
+				return 'X';
+			else
+				return 'x';
+			break;
+		case SDLK_y:
+			if (shifted)
+				return 'Y';
+			else
+				return 'y';
+			break;
+		case SDLK_z:
+			if (shifted)
+				return 'Z';
+			else
+				return 'z';
+			break;
+		default:
+			return '\0';
+			break;
+	}
 }
