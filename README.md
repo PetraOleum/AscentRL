@@ -15,6 +15,7 @@ Currently implemented:
 * Numpad 5: Wait 1 action
 * g: Pickup item
 * d: Drop item (takes you to invetory screen; select item with a-zA-Z as applicable, &lt;Esc&gt; to cancel)
+* i: View inventory
 * &lt;F11&gt;: toggle fullscreen
 * &lt;Esc&gt;: get out of fullscreen (when not in inventory mode)
 * Mouse click: Attempt to path to
