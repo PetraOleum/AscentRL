@@ -80,6 +80,9 @@ void AscentApp::OnLoop() {
 		} else
 			plan.pop();
 	}
+
+	if (toggledfullscreen) 
+		toggledfullscreen--;
 }
 
 void AscentApp::OnRender() {
@@ -151,25 +154,10 @@ void AscentApp::OnCleanup() {
 void AscentApp::onKeyDown_Standard(SDL_KeyboardEvent * keyEvent) {
 	switch (keyEvent->keysym.sym) {
 		case SDLK_F11:
-			if (fullscreen) {
-				SDL_SetWindowFullscreen(
-						window, 
-						0);
-				fullscreen = false;
-			} else {
-				SDL_SetWindowFullscreen(
-						window, 
-						SDL_WINDOW_FULLSCREEN_DESKTOP);
-				fullscreen = true;
-			}
+			togglefullscreen();
 			break;
 		case SDLK_ESCAPE:
-			if (fullscreen) {
-				SDL_SetWindowFullscreen(
-						window,
-						0);
-				fullscreen = false;
-			}
+			setfullscreen(false);
 			break;
 		case SDLK_LEFT:
 		case SDLK_h:
@@ -496,17 +484,7 @@ void AscentApp::onKeyDown_Inventory(SDL_KeyboardEvent * keyEvent) {
 	// Other key input types
 	switch (keyEvent->keysym.sym) {
 		case SDLK_F11:
-			if (fullscreen) {
-				SDL_SetWindowFullscreen(
-						window, 
-						0);
-				fullscreen = false;
-			} else {
-				SDL_SetWindowFullscreen(
-						window, 
-						SDL_WINDOW_FULLSCREEN_DESKTOP);
-				fullscreen = true;
-			}
+			togglefullscreen();
 			break;
 		case SDLK_ESCAPE:
 			currentlyDisplaying = windowType::Map;
@@ -711,4 +689,19 @@ char getalphanumeric(SDL_KeyboardEvent * keyEvent) {
 			return '\0';
 			break;
 	}
+}
+
+void AscentApp::togglefullscreen() {
+	if (toggledfullscreen == 0) {
+		setfullscreen(!fullscreen);
+		toggledfullscreen = 2; //Needs to be greater than 1 to avoid toggling too fast
+	}
+	
+}
+
+void AscentApp::setfullscreen(bool val) {
+	SDL_SetWindowFullscreen(
+			window,
+			val ? SDL_WINDOW_FULLSCREEN_DESKTOP : 0);
+	fullscreen = val;
 }

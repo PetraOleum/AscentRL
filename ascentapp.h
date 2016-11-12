@@ -47,6 +47,9 @@ class AscentApp {
 		/// @brief Is the app fullscreen
 		bool fullscreen = false;
 
+		/// @brief Whether or not fullscreen has been toggled this loop
+		uint8_t toggledfullscreen = 0;
+
 		/// @brief The font (liberation serif)
 		TTF_Font *font = NULL;
 
@@ -197,11 +200,22 @@ class AscentApp {
 		/// @brief Planned moves
 		std::queue<Action> plan;
 
+		/// @brief Drop an item
+		///
+		/// @param item The inventory char code of the item
 		inline void dropItem(char item) {
 			plan.push({ActionType::Drop, Direction::NONE, item});
 			currentlyDisplaying = windowType::Map;
 			userInputRequested = InputType::Standard;
 		}
+
+		/// @brief Toggle whether or not currently fullscreen
+		void togglefullscreen();
+
+		/// @brief Set whether or not currently fullscreen
+		///
+		/// @param val The new value
+		void setfullscreen(bool val);
 
 	public:
 		/// @brief Constructor
