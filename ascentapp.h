@@ -33,7 +33,9 @@ class AscentApp {
 			/// @brief Show the game map
 			Map,
 			/// @brief Show the inventory
-			Inventory
+			Inventory,
+			/// @brief Endgame (loss) screen
+			LossScreen
 		} currentlyDisplaying;
 
 		/// @brief The input type taken
@@ -43,7 +45,9 @@ class AscentApp {
 			/// @brief Select an inventory item to drop
 			InventoryItemToDrop,
 			/// @brief Select an inventory item to view (not implemented)
-			InventoryItemToView
+			InventoryItemToView,
+			/// @brief Endgame
+			EndGame
 		} userInputRequested;
 
 		/// @brief Pointer to the engine
@@ -79,6 +83,11 @@ class AscentApp {
 		///
 		/// @param keyEvent The event data
 		void onKeyDown_Inventory(SDL_KeyboardEvent * keyEvent);
+
+		/// @brief Handke a key down in the endgame screen
+		///
+		/// @param keyEvent The event data
+		void onKeyDown_EndGame(SDL_KeyboardEvent * keyEvent);
 
 		/// @brief Draw the status box on the bottom lines
 		void drawStatusBox();
@@ -266,6 +275,9 @@ class AscentApp {
 
 		/// @brief Rendering code for the inventory
 		void InventoryRender();
+
+		/// @brief Rendering code for the loss screen
+		void LossScreenRender();
 };
 
 #endif

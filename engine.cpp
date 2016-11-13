@@ -479,9 +479,10 @@ bool Engine::handleAttack(Creature * attacker, Creature * defender) {
 }
 
 void Engine::removeFromGame(Creature * deadded) {
-	// For the moment, the player can't die
-	if (deadded == player)
+	// This not the place to handle the death of the player, and kill()ing them here will cause a segfault
+	if (deadded == player) {
 		return;
+	}
 	if (deadded == NULL)
 		return;
 	Region * dcregion = deadded->getRegion();

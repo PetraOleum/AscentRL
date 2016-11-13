@@ -73,7 +73,7 @@ bool AscentApp::OnInit() {
 
 void AscentApp::OnLoop() {
 
-	if (!plan.empty()) {
+	if (!plan.empty() && currentlyDisplaying == windowType::Map) {
 		if (!engine->Act(plan.front())) {
 			while (!plan.empty())
 				plan.pop();
@@ -83,6 +83,11 @@ void AscentApp::OnLoop() {
 
 	if (toggledfullscreen) 
 		toggledfullscreen--;
+
+	if (engine->playerHP() <= 0) {
+		currentlyDisplaying = windowType::LossScreen;
+		userInputRequested = InputType::EndGame;
+	}
 }
 
 void AscentApp::OnRender() {
@@ -96,6 +101,9 @@ void AscentApp::OnRender() {
 			break;
 		case windowType::Inventory:
 			InventoryRender();
+			break;
+		case windowType::LossScreen:
+			LossScreenRender();
 			break;
 		default:
 			fprintf(stderr, "Nonimplemented window type %d", (int)currentlyDisplaying);
@@ -119,6 +127,9 @@ void AscentApp::OnEvent(SDL_Event* event) {
 				case InputType::InventoryItemToDrop:
 				case InputType::InventoryItemToView:
 					onKeyDown_Inventory(&event->key);
+					break;
+				case InputType::EndGame:
+					onKeyDown_EndGame(&event->key);
 					break;
 				default:
 					fprintf(stderr, "Non-implemented InputType\n");
@@ -316,8 +327,13 @@ void AscentApp::drawStatusBox() {
 			{
 				Foreground tb = engine->underWitch();
 				if (tb != Foreground::NONE) {
-					msgstringstream << engine->underItemString();
+					msgstringstream << engine->underItemString() << "\n";
 				} 
+				msgstringstream << "HP: " << engine->playerHP();
+				if (engine->playerMaxHP())
+					msgstringstream << " (MAX)";
+				if (!engine->playerAlive())
+					msgstringstream << " (Dead)";
 			}
 			break;
 		case InputType::InventoryItemToDrop:
@@ -325,6 +341,9 @@ void AscentApp::drawStatusBox() {
 			break;
 		case InputType::InventoryItemToView:
 			msgstringstream << "Select an item to view (Not implemented); Esc to cancel\n";
+			break;
+		case InputType::EndGame:
+			msgstringstream << "Esc to quit";
 			break;
 		default:
 			return;
@@ -714,4 +733,43 @@ void AscentApp::setfullscreen(bool val) {
 			window,
 			val ? SDL_WINDOW_FULLSCREEN_DESKTOP : 0);
 	fullscreen = val;
+}
+
+void AscentApp::onKeyDown_EndGame(SDL_KeyboardEvent * keyEvent) {
+	switch (keyEvent->keysym.sym) {
+		case SDLK_ESCAPE:
+			running = false;
+			break;
+		case SDLK_F11:
+			togglefullscreen();
+			break;
+		default:
+			break;
+	}
+}
+
+void AscentApp::LossScreenRender() {
+	SDL_Surface* textSurface = TTF_RenderText_Blended(font, "YOU DIED", {0xFF, 0xFF, 0xFF, 0xFF});
+	if (textSurface == NULL) {
+		fprintf(stderr, "Couldn\'t make the text surface. %s\n", TTF_GetError());
+		return;
+	}
+	int message_w = textSurface->w;
+	int message_h = textSurface->h;
+	if (statusMessage != NULL)
+		SDL_DestroyTexture(statusMessage);
+	statusMessage = SDL_CreateTextureFromSurface(renderer, textSurface);
+	SDL_FreeSurface(textSurface);
+	if (statusMessage == NULL) {
+		fprintf(stderr, "Couldn\'t create the text texture. %s\n", SDL_GetError());
+		return;
+	}
+	SDL_Rect messageRect = {
+		(windowWidth - message_w) / 2,
+		(windowHeight - message_h) / 3,
+		message_w,
+		message_h
+	};
+	SDL_RenderCopy(renderer, statusMessage, NULL, &messageRect);
+
 }

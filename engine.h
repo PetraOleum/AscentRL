@@ -233,8 +233,32 @@ class Engine {
 			return player->Properties();
 		}
 
-		inline const Inventory& getPlayerInventory() {
+		/// @brief Expose player inventory
+		///
+		/// @return const reference to the player's inventory
+		inline const Inventory& getPlayerInventory() const {
 			return player->getInventory();
+		}
+
+		/// @brief Whether the player is alive
+		///
+		/// @return player->isAlive()
+		inline bool playerAlive() const {
+			return player->isAlive();
+		}
+
+		/// @brief Expose player HP
+		///
+		/// @return The player's HP
+		inline int playerHP() const {
+			return player->HP();
+		}
+
+		/// @brief Expose if at player's max HP
+		///
+		/// @return If at the player's max HP
+		inline bool playerMaxHP() const {
+			return player->maxHealth();
 		}
 
 };
