@@ -8,12 +8,13 @@
 std::mt19937 gen;
 /// @brief Whether or not the generator has been initialised
 bool initgen = false;
-/// @brief A int distribution
+/// @brief A int distribution, to be initialised as needed
 std::uniform_int_distribution<int> idist;
+/// @brief A reals distribution, to be initialised once
 std::uniform_real_distribution<double> probdist;
 
 Region::Region(int w, int h, RoomType type) {
-	if (!initgen) {
+	if (!initgen) { // Initialise probdist - but only once
 		std::random_device rd;
 		gen = std::mt19937(rd());
 		probdist = std::uniform_real_distribution<double>(0, 1);

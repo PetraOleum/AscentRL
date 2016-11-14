@@ -20,9 +20,13 @@ class Region;
 
 /// @brief Hold a connnection between regions
 struct Connection {
+	/// @brief The point on this region in which the connection comes from
 	Point from;
+	/// @brief Pointer to the Region that the connection is going to
 	Region* to;
+	/// @brief The location on that other Region corresponding to from
 	Point toLocation;
+	/// @brief The direction that the connection is going
 	Direction direction;
 };
 
@@ -41,6 +45,7 @@ class Region {
 		/// @brief Creatures
 		std::map<Point, Creature *> creatures;
 
+		/// @brief Each point can contain items - map the locations to a deque
 		std::map<Point, std::deque<ItemType>> items;
 
 		/// @brief Backgrounds
