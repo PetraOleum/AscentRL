@@ -12,15 +12,15 @@ Engine::Engine() {
 
 	//Temp stuff with 1 region
 	
-	Region * StartRegion = new Region(10, 10, RoomType::Room);
+	Region * StartRegion = new Region(10, 10, RoomType::Spiral);
 	player = new Creature({0, 0}, StartRegion, CreatureType::Witch, Team::Player);
 	player->give(ItemType::Gold, 1);
 	player->give(ItemType::NONE, 17);
 	player->give(ItemType::Staff);
 	player->give(ItemType::Gold, 20);
-	Creature * rat = new Creature({5, 5}, StartRegion, CreatureType::Rat);
-	StartRegion->putCreature(rat->getPosition(), rat);
-	creatures.push_back(rat);
+//	Creature * rat = new Creature({5, 5}, StartRegion, CreatureType::Rat);
+//	StartRegion->putCreature(rat->getPosition(), rat);
+//	creatures.push_back(rat);
 	StartRegion->position = { 0, 0 };
 	StartRegion->putCreature( player->getPosition(), player);
 	regions.push_back(StartRegion);
@@ -201,8 +201,8 @@ void Engine::manageAltRegion(Region * curregion, const Point& position) {
 				alternateRegion->markDoor(tc.toLocation);
 //			altRegionLoaded = true;
 		} else {
-			RoomType nrt = (curregion->Type() == RoomType::Room)
-				? RoomType::Corridor : RoomType::Room;
+			RoomType nrt = (curregion->Type() == RoomType::Corridor)
+				? RoomType::Room : RoomType::Corridor;
 //			printf("%d -> %d\n", (int)activeRegion->Type(), (int)nrt);
 			Region * nr = NULL;
 			std::pair<Point, bool> freept;
@@ -232,7 +232,7 @@ void Engine::manageAltRegion(Region * curregion, const Point& position) {
 				return;
 			}
 			if (!curregion->connectTo(nr, tc.direction, position, freept.first)) {
-				fprintf(stderr, "This should not have happened: error connecting activeRegion to nr\n");
+				fprintf(stderr, "This should not have happened: error connecting activeRegion to nr. Is this a \"real\" door?\n");
 //				altRegionLoaded = false;
 //				alternateRegion = NULL;
 				if (!foundfree)

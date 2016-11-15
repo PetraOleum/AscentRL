@@ -81,7 +81,96 @@ Region::Region(int w, int h, RoomType type) {
 				addrandomemptyconnection(Direction::Down, Point(x, h));
 			}
 			break;
+		case RoomType::Spiral:
+			for (int x = 0; x < w; x++) {
+				for (int y = 0; y < h; y++) {
+					Point tp = Point(x, y);
+					points[tp] = Background::TiledFloor;
+//					if (probdist(gen) < GOLD_PROB)
+//						placeItem(tp, ItemType::Gold);
+//					if (probdist(gen) < STAFF_PROB)
+//						placeItem(tp, ItemType::Staff);
+//					if (probdist(gen) < CHEST_PROB)
+//						placeItem(tp, ItemType::Chest);
+				}
+				points[Point(x, -1)] = Background::StoneWall;
+				points[Point(x, h)] = Background::StoneWall;
+			}
+			for (int y = -1; y <=h; y++) {
+				points[Point(-1, y)] = Background::StoneWall;
+				points[Point(w, y)] = Background::StoneWall;
+			}
+			if (h >= 3 && w >= 3){ // Draw spiral
+				int layers = (MIN(w, h) - 2) / 4;
+				int layercount = 0;
+				Point currentlyDrawing = {1,0};
+				Direction drawdir = Direction::Down;
+				auto contLine = [layers, &layercount, w, h, &drawdir, this](Point pt) -> bool {
+//					printf("%d\n", (layercount + 1) * 2);
+					switch (drawdir) {
+						case Direction::Down:
+							return pt.second < h - (layercount + 1) * 2;
+						case Direction::Up:
+							return pt.second >= (layercount + 1) * 2;
+						case Direction::Left:
+							return pt.first >= (layercount + 2) * 2; // Because want to actually spiral
+						case Direction::Right:
+//							printf("%d\n", w - (layercount + 1) * 2);
+							return pt.first < w - (layercount + 1) * 2;
+						default:
+							fprintf(stderr, "Direction weirdness here\n");
+							return false;
+					}
+				};
+				auto turnDir = [&layercount, &drawdir]() {
+					switch (drawdir) {
+						case Direction::Down:
+							drawdir = Direction::Right;
+							break;
+						case Direction::Up:
+							drawdir = Direction::Left;
+							break;
+						case Direction::Left:
+							drawdir = Direction::Down;
+							layercount++;
+							break;
+						case Direction::Right:
+							drawdir = Direction::Up;
+							break;
+						default:
+							fprintf(stderr, "Direction weirdness here\n");
+							break;
+					}
+				};
+				while (layercount < layers && currentlyDrawing.second >= 0 && currentlyDrawing.first >= 0) {
+//					printf("Printing at %d:%d\n", currentlyDrawing.first, currentlyDrawing.second);
+					points[currentlyDrawing] = Background::StoneWall;
+					if (!contLine(currentlyDrawing)) {
+						turnDir();
+//						printf("Turning to direction %d; layercount = %d\n", (int)drawdir, layercount);
+					}
+					currentlyDrawing = PAIR_SUM(currentlyDrawing, DISPLACEMENT(drawdir));
+				}
+				points[Point(1, 3)] = Background::Door;
+			}
+			{
+				addrandomemptyconnection(Direction::Up, {0, -1});
+				idist = std::uniform_int_distribution<int>(4, 4 + (w + h) / 2);
+				int maxconnections = idist(gen);
+				numConnections = 0;
+				idist = std::uniform_int_distribution<int>(0, 4);
+				for (uint8_t i = 0; i < 4 && i < maxconnections; i++) {
+					if (addrandomemptyconnection((Direction)(i)))
+						numConnections++;
+				}
+				for (uint8_t i = 4; i < maxconnections; i++) {
+					if (addrandomemptyconnection((Direction)(idist(gen))))
+						numConnections++;
+				}
+			}
+			break;
 		default:
+			fprintf(stderr, "Unimplemented RoomType\n");
 			break;
 	}
 	

@@ -35,7 +35,9 @@ enum class RoomType : uint8_t {
 	/// @brief A rectangular area with four doors
 	Room,
 	/// @brief A corridor, potentially with several doors
-	Corridor
+	Corridor,
+	/// @brief Test room type
+	Spiral
 };
 
 /// @brief Class for the region (i.e. room)

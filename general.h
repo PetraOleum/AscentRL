@@ -16,6 +16,16 @@ class Creature;
 /// @return The abs of the value
 #define ABS(A) ((A < 0) ? (-(A)) : (A))
 
+/// @brief Minimum value
+///
+/// @return The smaller of A and B
+#define MIN(A, B) ((A > B) ? (B) : (A))
+
+/// @brief Maximum value
+///
+/// @return The larger of A and B
+#define MAX(A, B) ((A > B) ? (A) : (B))
+
 
 /// @brief Background sprites, in the order they appear on the sheet
 enum class Background : uint8_t {
@@ -81,6 +91,7 @@ const std::map<Background, BackgroundProperties> bkgrProps = {
 	{Background::EMPTYNESS, {false, false, false}},
 	{Background::TiledFloor, {true, true, true}},
 	{Background::DirtWall, {false, false, false}},
+	{Background::DirtFloor, {true, true, true}},
 	{Background::StoneWall, {false, false, false}},
 	{Background::Door, {true, false, false}},
 	{Background::MarkedDoor, {true, false, false}},
